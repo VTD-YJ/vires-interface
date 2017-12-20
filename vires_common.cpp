@@ -36,118 +36,12 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include "RDBHandler.hh"
-#include "main.h"
+#include "vires_common.h"
 
 
-// forward declarations of methods
-/**
-* method for writing the commands to the SHM
-*/
-int  writeTriggerToShm();
-
-/**
-* open the network interface for sending trigger data
-*/
-void openNetwork();
-
-/**
-* make sure network data is being read
-*/
-void readNetwork();
-
-/**
-* open the shared memory segment for reading image data
-*/
-void openShm();
-
-/**
-* check and parse the contents of the shared memory
-*/
-int checkShm();
-
-/**
-* check for data that has to be read (otherwise socket will be clogged)
-* @param descriptor socket descriptor
-*/
-int getNoReadyRead( int descriptor );
-
-/**
-* parse an RDB message (received via SHM or network)
-* @param msg    pointer to message that shall be parsed
-*/
-void parseRDBMessage( RDB_MSG_t* msg );
-
-/**
-* parse an RDB message entry
-* @param simTime    simulation time of the message
-* @param simFrame   simulation frame of the message
-* @param entryHdr   pointer to the entry header itself
-*/
-void parseRDBMessageEntry( const double & simTime, const unsigned int & simFrame, RDB_MSG_ENTRY_HDR_t* entryHdr );
-
-/**
-* handle an RDB item of type IMAGE
-* @param simTime    simulation time of the message
-* @param simFrame   simulation frame of the message
-* @param img        pointer to the image data
-*/
-void handleRDBitem( const double & simTime, const unsigned int & simFrame, RDB_IMAGE_t* img );
-
-/**
-* routine for handling an RDB message; to be provided by user;
-* here, only a printing of the message is performed
-* @param msg    pointer to the message that is to be handled
-*/
-void handleMessage( RDB_MSG_t* msg );
-
-/**
-* send a trigger to the taskControl via network socket
-* @param sendSocket socket descriptor
-* @param simTime    internal simulation time
-* @param simFrame   internal simulation frame
-*/
-void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame );
 
 
-/**
-* some global variables, considered "members" of this example
-*/
-unsigned int mShmKey       = RDB_SHM_ID_IMG_GENERATOR_OUT;      // key of the SHM segment
-unsigned int mCheckMask    = RDB_SHM_BUFFER_FLAG_TC;
-void*        mShmPtr       = 0;                                 // pointer to the SHM segment
-size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
-bool         mVerbose      = false;                             // run in verbose mode?
-int          mForceBuffer  = -1;                                // force reading one of the SHM buffers (0=A, 1=B)
-char         szServer[128];                                     // Server to connect to
-int          iPort         = DEFAULT_PORT;                      // Port on server to connect to
-int          mHaveImage    = 0;                                 // is an image available?
-int          mClient       = -1;                                // client socket
-int          mClient_GT    = -1;
-unsigned int mSimFrame     = 0;                                 // simulation frame counter
-double       mSimTime      = 0.0;                               // simulation time
-double       mDeltaTime    = 0.01;                              // simulation step width
-int          mLastShmFrame = -1;
-
-/**
-* some global variables, considered "members" of this example
-*/
-unsigned int mShmKey_writer       = RDB_SHM_ID_CONTROL_GENERATOR_IN;   // key of the SHM segment
-unsigned int mFrameNo      = 0;
-double       mFrameTime    = 0.030;                             // frame time is 30ms
-void*        mShmPtr_writer       = 0;                                 // pointer to the SHM segment
-size_t       mShmTotalSize_writer = 64 * 1024;                         // 64kB total size of SHM segment
-// the memory and message management
-
-
-int          mPortTx    = DEFAULT_TX_PORT;
-int          mSocketTx  = -1;
-unsigned int mAddressTx = INADDR_BROADCAST;
-int          mPortRx    = DEFAULT_RX_PORT;
-int          mSocketRx  = -1;
-unsigned int mAddressRx = inet_addr( "127.0.0.1" );
-
-
-void handleMessage( RDB_MSG_t* msg )
+void ViresInterface::handleMessage( RDB_MSG_t* msg )
 {
     bool csv = false;
     bool csvHeader = false;
@@ -174,7 +68,7 @@ void handleMessage( RDB_MSG_t* msg )
 }
 
 
-void openNetwork()
+void ViresInterface::openNetwork()
 {
     struct sockaddr_in server;
     struct hostent    *host = NULL;
@@ -225,7 +119,7 @@ void openNetwork()
     fprintf( stderr, "connected!\n" );
 }
 
-void openNetwork_GT()
+void ViresInterface::openNetwork_GT()
 {
     struct sockaddr_in server;
     struct hostent    *host = NULL;
@@ -277,7 +171,7 @@ void openNetwork_GT()
 }
 
 
-void readNetwork()
+void ViresInterface::readNetwork()
 {
     static char*         szBuffer       = 0;
     int                  ret            = 0;
@@ -359,7 +253,7 @@ void readNetwork()
 * open the shared memory segment
 */
 
-void openShm()
+void ViresInterface::openShm()
 {
     // do not open twice!
     if ( mShmPtr )
@@ -387,7 +281,7 @@ void openShm()
     }
 }
 
-int checkShm()
+int ViresInterface::checkShm()
 {
     if ( !mShmPtr )
         return 0;
@@ -562,13 +456,15 @@ int checkShm()
     return 1;
 }
 
-void parseRDBMessage( RDB_MSG_t* msg )
+void ViresInterface::parseRDBMessage( RDB_MSG_t* msg )
 {
-    MyRDBHandler mRdbHandler;                              // use the RDBHandler helper routines to handle
-    mRdbHandler.parseMessage(msg);
+    // call registered call back handler.
+    //MyRDBHandler mRdbHandler;                              // use the RDBHandler helper routines to handle
+    parseMessage(msg);
 }
 
-int getNoReadyRead( int descriptor )
+
+int ViresInterface::getNoReadyRead( int descriptor )
 {
     fd_set         fs;
     struct timeval time;
@@ -592,7 +488,11 @@ int getNoReadyRead( int descriptor )
     return retVal;
 }
 
-void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame )
+void ViresInterface::sendRDBTrigger() {
+    sendRDBTrigger(mClient, mSimTime, mSimFrame );
+}
+
+void ViresInterface::sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame )
 {
     // is the socket available?
     if ( mClient < 0 )
@@ -621,4 +521,106 @@ void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned in
 
     if ( !retVal )
         fprintf( stderr, "sendRDBTrigger: could not send trigger\n" );
+
+    // increase internal counters
+    mSimTime += mDeltaTime;
+    mSimFrame++;
+}
+
+
+void ViresInterface::parseMessage( RDB_MSG_t* msg ) {
+    Framework::RDBHandler baseObject;
+    baseObject.parseMessage(msg);
+}
+
+void ViresInterface::parseStartOfFrame(const double &simTime, const unsigned int &simFrame) {
+    fprintf( stderr, "headers %d\n,", RDB_PKG_ID_START_OF_FRAME );
+    fprintf( stderr, "RDBHandler::parseStartOfFrame: simTime = %.3f, simFrame = %d\n", simTime, simFrame );
+}
+
+void ViresInterface::parseEndOfFrame( const double & simTime, const unsigned int & simFrame )
+{
+    fprintf( stderr, "headers %d\n,", RDB_PKG_ID_END_OF_FRAME );
+    fprintf( stderr, "RDBHandler::parseEndOfFrame: simTime = %.3f, simFrame = %d\n", simTime, simFrame );
+}
+
+void ViresInterface::parseEntry( RDB_OBJECT_CFG_t *data, const double & simTime, const unsigned int & simFrame, const
+unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {
+    RDB_OBJECT_CFG_t* object = reinterpret_cast<RDB_OBJECT_CFG_t*>(data); /// raw image data
+    std::cout << object->type;
+}
+
+void ViresInterface::parseEntry( RDB_OBJECT_STATE_t *data, const double & simTime, const unsigned int & simFrame, const
+unsigned
+short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {
+    RDB_OBJECT_STATE_t* object = reinterpret_cast<RDB_OBJECT_STATE_t*>(data); /// raw image data
+    if ( strcmp(data->base.name, "New Character") == 0) {
+//        fprintf( stderr, "handleRDBitem: handling object state\n" );
+//        fprintf( stderr, "    simTime = %.3lf, simFrame = %d\n", simTime, simFrame );
+//        fprintf( stderr, "    object = %s, id = %d\n", data->base.name, data->base.id );
+//        fprintf( stderr, "    position = %.3lf / %.3lf / %.3lf\n", data->base.pos.x, data->base.pos.y, data->base
+//                .pos.z );
+
+        fprintf( stderr, "INDICATOR: %d %.3lf %.3lf %.3lf %.3lf \n" ,
+                 simFrame,data->base.pos.x,
+                 data->base.pos.y, data->base.geo.dimX, data->base.geo.dimY );
+    }
+    else if ( strcmp(data->base.name, "New Character01") == 0) {
+        fprintf( stderr, "INDICATOR2: %d %.3lf %.3lf %.3lf %.3lf \n" ,
+                 simFrame,data->base.pos.x,
+                 data->base.pos.y, data->base.geo.dimX, data->base.geo.dimY );
+    }
+}
+
+
+void ViresInterface::parseEntry( RDB_IMAGE_t *data, const double & simTime, const unsigned int & simFrame, const
+unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {
+    if ( !data )
+        return;
+    fprintf( stderr, "handleRDBitem: image\n" );
+    fprintf( stderr, "    simTime = %.3lf, simFrame = %d, mLastShmFrame = %d\n", simTime, simFrame, mLastShmFrame );
+    fprintf( stderr, "    width / height = %d / %d\n", data->width, data->height );
+    fprintf( stderr, "    dataSize = %d\n", data->imgSize );
+
+    // ok, I have an image:
+    mHaveImage = 1;
+    char* image_data_=NULL;
+    RDB_IMAGE_t* image = reinterpret_cast<RDB_IMAGE_t*>(data); /// raw image data
+
+    /// RDB image information of \see image_data_
+    RDB_IMAGE_t image_info_;
+    memcpy(&image_info_, image, sizeof(RDB_IMAGE_t));
+
+    if (NULL == image_data_) {
+        image_data_ = reinterpret_cast<char*>(malloc(image_info_.imgSize));
+    } else {
+        image_data_ = reinterpret_cast<char*>(realloc(image_data_, image_info_.imgSize));
+    }
+    // jump data header
+    memcpy(image_data_, reinterpret_cast<char*>(image) + sizeof(RDB_IMAGE_t), image_info_.imgSize);
+
+    if ( image_info_.imgSize == image_info_.width*image_info_.height*3){
+        png::image<png::rgb_pixel> save_image(image_info_.width, image_info_.height);
+        unsigned int count = 0;
+        for (int32_t v=0; v<image_info_.height; v++) {
+            for (int32_t u=0; u<image_info_.width; u++) {
+                png::rgb_pixel val;
+                val.red   = (unsigned char)image_data_[count++];
+                val.green = (unsigned char)image_data_[count++];
+                val.blue  = (unsigned char)image_data_[count++];
+                //val.alpha = (unsigned char)image_data_[count++];
+                save_image.set_pixel(u,v,val);
+            }
+        }
+
+        char file_name[500];
+        sprintf(file_name,
+                "/local/git/PriorityGraphSensors/vires_dataset/data/stereo_flow/image_02_car/000"
+                        "%03d_10.png", simFrame);
+        save_image.write(file_name);
+    }
+    else {
+        fprintf(stderr, "ignoring file with %d channels\n", image_info_.imgSize /( image_info_
+                                                                                           .width*image_info_.height));
+    }
 }
