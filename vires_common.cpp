@@ -13,7 +13,6 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include "RDBHandler.hh"
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/shm.h>
@@ -25,7 +24,6 @@
 #include <assert.h>
 #include <png++/rgba_pixel.hpp>
 #include <png++/image.hpp>
-#include "RDBHandler.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -35,8 +33,8 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include "RDBHandler.hh"
 #include "vires_common.h"
+#include "vires/RDBHandler.hh"
 
 
 
@@ -460,7 +458,7 @@ void ViresInterface::parseRDBMessage( RDB_MSG_t* msg )
 {
     // call registered call back handler.
     //MyRDBHandler mRdbHandler;                              // use the RDBHandler helper routines to handle
-    parseMessage(msg);
+    this->parseMessage(msg);
 }
 
 
@@ -529,8 +527,7 @@ void ViresInterface::sendRDBTrigger( int & sendSocket, const double & simTime, c
 
 
 void ViresInterface::parseMessage( RDB_MSG_t* msg ) {
-    Framework::RDBHandler baseObject;
-    baseObject.parseMessage(msg);
+    Framework::RDBHandler::parseMessage(msg);
 }
 
 void ViresInterface::parseStartOfFrame(const double &simTime, const unsigned int &simFrame) {
@@ -615,7 +612,7 @@ unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemI
 
         char file_name[500];
         sprintf(file_name,
-                "/local/git/PriorityGraphSensors/vires_dataset/data/stereo_flow/image_02_car/000"
+                "/local/git/MotionFlowPriorityGraphSensors/datasets/vires_dataset/data/stereo_flow/image_02/000"
                         "%03d_10.png", simFrame);
         save_image.write(file_name);
     }

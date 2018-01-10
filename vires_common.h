@@ -19,7 +19,7 @@
 #define DEFAULT_TX_PORT     48191
 
 
-class ViresInterface {
+class ViresInterface : Framework::RDBHandler {
 
 /**
 * some global variables, considered "members" of this example

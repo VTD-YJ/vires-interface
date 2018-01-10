@@ -22,6 +22,10 @@ VTD Connector
 
 /**
 
+ 48195 - RDBout - MM
+ 48190 - RDBraw - MM
+ rdbsniffer -c tcp -p port
+
  VIRES Virtual Test Drive is a tool chain and modular framework for the provision of virtual environments in
  engineering simulations for the automotive and railroad industry.
  The dongle can be configured using export VI_LIC_DEVICE="name_of_the_dongle" in vtdStart.sh
@@ -698,5 +702,17 @@ The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tra
  1984.
  Primarily two things: Ray tracing and scan line tracing.
  Ray tracing is a very complex algorithm, but in short there are
+
+ start Standard_test/Movement
+ Check mark to accept the parameters
+ Start the simulation.
+ rdbTriggerSample is present at /VIRES/VTD.2.0/Develop/Communication/RDBTriggerSample
+ shmReader -k:33130 ( default is 33130 ) is present at VTD.2.0/Develop/Communication/RDBShmSample
+
+ The shmReader reads the shared memory over RDB.
+ The trigger sends the trigger over RDB via the tcp port 48190
+
+
+
 
 */
