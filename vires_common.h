@@ -10,7 +10,7 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <string.h>
-
+#include "vires/RDBHandler.hh"
 
 #define DEFAULT_PORT        48190   /* for image port it should be 48192 */
 #define DEFAULT_BUFFER      204800

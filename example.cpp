@@ -199,3 +199,50 @@ writeTriggerToShm();
 usleep( ( unsigned int ) ( 1.e6 * mFrameTime ) );    // wait for frame time (not very precise!)
 }
 }
+
+
+void validate() {
+    /**
+* validate the arguments given in the command line
+*/
+    for (int i = 1; i < argc; i++) {
+        if ((argv[i][0] == '-') || (argv[i][0] == '/')) {
+            switch (tolower(argv[i][1])) {
+                case 'k':        // shared memory key
+                    unsigned int tempKey;
+                    if (strlen(argv[i]) > 3) {
+                        sscanf(&argv[i][3], "0x%x", &tempKey);
+                        vi.setShmKey(tempKey);
+                    }
+                    break;
+
+                case 'c':       // check mask
+                    if (strlen(argv[i]) > 3)
+                        vi.setCheckMask(atoi(&argv[i][3]));
+                    break;
+
+                case 'f':       // force reading a given buffer
+                    if (strlen(argv[i]) > 3)
+                        vi.setForceBuffer(atoi(&argv[i][3]));
+                    break;
+
+                case 'v':       // verbose mode
+                    vi.setVerbose(true);
+                    break;
+
+                case 'p':        // Remote port
+                    if (strlen(argv[i]) > 3)
+                        vi.setPort(atoi(&argv[i][3]));
+                    break;
+                case 's':       // Server
+                    if (strlen(argv[i]) > 3)
+                        strcpy((char *)(serverName.c_str()), &argv[i][3]);
+                    break;
+                case 'h':
+                default:
+                    usage();
+                    break;
+            }
+        }
+    }
+}

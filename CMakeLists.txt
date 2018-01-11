@@ -31,4 +31,13 @@ include_directories(${QT5_INCLUDE_DIR})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
 
 add_library(viresrdb SHARED ${SOURCE_FILES})
-install(TARGETS viresrdb DESTINATION lib)
+#install(TARGETS viresrdb DESTINATION "lib")
+
+#install(FILES "vires/RDBHandler.hh" DESTINATION "include/vires/vires")
+install(FILES "vires_common.h" DESTINATION "include/vires")
+
+set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "vires/viRDBIcd.h;vires/RDBHandler.hh")
+install(TARGETS viresrdb
+        LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/vires/vires
+        )
