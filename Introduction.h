@@ -712,7 +712,4 @@ The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tra
  The shmReader reads the shared memory over RDB.
  The trigger sends the trigger over RDB via the tcp port 48190
 
-
-
-
 */
