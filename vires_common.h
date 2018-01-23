@@ -178,13 +178,17 @@ namespace Framework {
             mHaveImage = val;
         }
 
+        int getLastShmFrame(void) {
+            return mLastShmFrame;
+        }
+
         void setPort(int val) {
             iPort = val;
         }
 
-        void parseStartOfFrame(const double &simTime, const unsigned int &simFrame);
+        virtual void parseStartOfFrame(const double &simTime, const unsigned int &simFrame);
 
-        void parseEndOfFrame( const double & simTime, const unsigned int & simFrame );
+        virtual void parseEndOfFrame( const double & simTime, const unsigned int & simFrame );
 
         void parseEntry( RDB_GEOMETRY_t *                 data, const double & simTime, const unsigned int & simFrame,
                          const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const
@@ -195,11 +199,12 @@ namespace Framework {
         void parseEntry( RDB_LANE_INFO_t *                data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
         void parseEntry( RDB_ROADMARK_t *                 data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
 
-        void parseEntry( RDB_OBJECT_CFG_t *data, const double & simTime, const unsigned int &
+        virtual void parseEntry( RDB_OBJECT_CFG_t *data, const double & simTime, const unsigned int &
         simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem );
 
-        void parseEntry( RDB_OBJECT_STATE_t *data, const double & simTime, const unsigned int & simFrame, const unsigned
-        short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem );
+        virtual void parseEntry( RDB_OBJECT_STATE_t *data, const double & simTime, const unsigned int & simFrame, const
+        unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int &
+        totalElem );
 
         void parseEntry( RDB_VEHICLE_SYSTEMS_t *          data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
         void parseEntry( RDB_VEHICLE_SETUP_t *            data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
@@ -214,8 +219,9 @@ namespace Framework {
         void parseEntry( RDB_TRAFFIC_SIGN_t *             data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
         void parseEntry( RDB_ROAD_STATE_t *               data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
 
-        void parseEntry( RDB_IMAGE_t *data, const double & simTime, const unsigned int & simFrame, const unsigned
-        short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem );
+        virtual void parseEntry( RDB_IMAGE_t *data, const double & simTime, const unsigned int & simFrame, const
+        unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int &
+        totalElem );
 
         void parseEntry( RDB_LIGHT_SOURCE_t *             data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
         void parseEntry( RDB_ENVIRONMENT_t *              data, const double & simTime, const unsigned int & simFrame, const unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {}
