@@ -522,4 +522,54 @@ namespace Framework {
         mSimTime += mDeltaTime;
         mSimFrame++;
     }
+
+    void ViresInterface::parseStartOfFrame(const double &simTime, const unsigned int &simFrame) {
+        fprintf( stderr, "RDBHandler::parseStartOfFrame: simTime = %.3f, simFrame = %d\n", simTime, simFrame );
+    }
+
+    void ViresInterface::parseEndOfFrame( const double & simTime, const unsigned int & simFrame )
+    {
+        fprintf( stderr, "RDBHandler::parseEndOfFrame: simTime = %.3f, simFrame = %d\n", simTime, simFrame );
+    }
+
+    void ViresInterface::parseEntry( RDB_OBJECT_CFG_t *data, const double & simTime, const unsigned int & simFrame, const
+    unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem )
+    {
+        RDB_OBJECT_CFG_t* object = reinterpret_cast<RDB_OBJECT_CFG_t*>(data); /// raw image data
+        std::cout << object->type;
+    }
+
+    void ViresInterface::parseEntry( RDB_OBJECT_STATE_t *data, const double & simTime, const unsigned int & simFrame, const
+    unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem
+    ) {
+        RDB_OBJECT_STATE_t* object = reinterpret_cast<RDB_OBJECT_STATE_t*>(data); /// raw image data
+    }
+
+
+    void ViresInterface::parseEntry( RDB_IMAGE_t *data, const double & simTime, const unsigned int & simFrame, const
+    unsigned short & pkgId, const unsigned short & flags, const unsigned int & elemId, const unsigned int & totalElem ) {
+        if ( !data )
+            return;
+        fprintf( stderr, "handleRDBitem: image\n" );
+        fprintf( stderr, "    simTime = %.3lf, simFrame = %d, mLastShmFrame = %d\n", simTime, simFrame, mLastShmFrame );
+        fprintf( stderr, "    width / height = %d / %d\n", data->width, data->height );
+        fprintf( stderr, "    dataSize = %d\n", data->imgSize );
+
+        // ok, I have an image:
+        mHaveImage = 1;
+        char* image_data_=NULL;
+        RDB_IMAGE_t* image = reinterpret_cast<RDB_IMAGE_t*>(data); /// raw image data
+
+        /// RDB image information of \see image_data_
+        RDB_IMAGE_t image_info_;
+        memcpy(&image_info_, image, sizeof(RDB_IMAGE_t));
+
+        if (NULL == image_data_) {
+            image_data_ = reinterpret_cast<char*>(malloc(image_info_.imgSize));
+        } else {
+            image_data_ = reinterpret_cast<char*>(realloc(image_data_, image_info_.imgSize));
+        }
+        // jump data header
+        memcpy(image_data_, reinterpret_cast<char*>(image) + sizeof(RDB_IMAGE_t), image_info_.imgSize);
+    }
 }
