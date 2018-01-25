@@ -139,6 +139,10 @@ namespace Framework {
             return mShmKey;
         }
 
+        unsigned int getSimFrame() {
+            return mSimFrame;
+        }
+
         void setShmKey(unsigned int val ) {
             mShmKey = val;
         }

@@ -22,6 +22,17 @@ VTD Connector
 
 /**
 
+ prjParameter in .vpj file is picked up from Projects/Current/Config/<filename>
+ <Testcase author="" created="06.06.2011/18:49:16" modified="25.01.2018/14:57:27" name="Unnamed" prjParameter="RDBtrigger" scenario="Current/Scenarios/two.xml">
+"<SimCtrl><UnloadSensors /><LoadScenario filename="/local/git/PriorityGraphSensors/VIRES/VTD.2.0/Data/Projects/Current/Scenarios/two.xml" /><Start mode="operation" /></SimCtrl>"
+ .
+ .
+ .
+ .
+ </Testcase>
+
+
+
  48195 - RDBout - MM
  48190 - RDBraw - MM
  rdbsniffer -c tcp -p port
