@@ -1,41 +1,16 @@
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <sys/shm.h>
-#include <string.h>
 #include <unistd.h>
-#include <errno.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/shm.h>
-#include <string.h>
-#include <unistd.h>
-#include <viRDBIcd.h>
-#include <adsim/vtd/rdb_codec.h>
 #include <iostream>
-#include <assert.h>
-#include <png++/rgba_pixel.hpp>
-#include <png++/image.hpp>
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <arpa/inet.h>
 #include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#include <string.h>
 #include "vires_common.h"
-#include "vires/RDBHandler.hh"
 
+
+/*
+ * Transport endpoint is already connected
+ */
 
 
 namespace Framework {
@@ -66,8 +41,10 @@ namespace Framework {
     }
 
 
-    void ViresInterface::openNetwork()
+    int ViresInterface::openNetwork(int iPort)
     {
+
+        int mClient;
         struct sockaddr_in server;
         struct hostent    *host = NULL;
 
@@ -77,7 +54,7 @@ namespace Framework {
         if ( mClient == -1 )
         {
             fprintf( stderr, "socket() failed: %s\n", strerror( errno ) );
-            return;
+            return mClient;
         }
 
         int opt = 1;
@@ -95,81 +72,35 @@ namespace Framework {
             if ( host == NULL )
             {
                 fprintf( stderr, "Unable to resolve server: %s\n", szServer );
-                return;
+                return -1;
             }
             memcpy( &server.sin_addr, host->h_addr_list[0], host->h_length );
         }
 
         // wait for connection
         bool bConnected = false;
-
-        while ( !bConnected )
+        ushort retries = 0;
+        ushort MAX_RETRIES = 5;
+        while ( !bConnected && retries < MAX_RETRIES)
         {
             if ( connect( mClient, (struct sockaddr *)&server, sizeof( server ) ) == -1 )
             {
-                fprintf( stderr, "connect() failed: %s\n", strerror( errno ) );
+                fprintf( stderr, "%d connect() failed: %s\n", iPort, strerror( errno ) );
                 sleep( 1 );
+                retries++;
             }
             else
                 bConnected = true;
         }
 
-        fprintf( stderr, "connected!\n" );
+        if (!bConnected)
+            return -1;
+
+        fprintf( stderr, "%d connected! with no error %s\n", iPort, strerror( errno ) );
+        return mClient;
     }
 
-    void ViresInterface::openNetwork_GT()
-    {
-        struct sockaddr_in server;
-        struct hostent    *host = NULL;
-
-        // Create the socket, and attempt to connect to the server
-        mClient_GT = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-
-        if ( mClient_GT == -1 )
-        {
-            fprintf( stderr, "socket() failed: %s\n", strerror( errno ) );
-            return;
-        }
-
-        int opt = 1;
-        setsockopt ( mClient_GT, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof( opt ) );
-
-        server.sin_family      = AF_INET;
-        server.sin_port        = htons(48185);
-        server.sin_addr.s_addr = inet_addr(szServer);
-
-        // If the supplied server address wasn't in the form
-        // "aaa.bbb.ccc.ddd" it's a hostname, so try to resolve it
-        if ( server.sin_addr.s_addr == INADDR_NONE )
-        {
-            host = gethostbyname(szServer);
-            if ( host == NULL )
-            {
-                fprintf( stderr, "Unable to resolve server: %s\n", szServer );
-                return;
-            }
-            memcpy( &server.sin_addr, host->h_addr_list[0], host->h_length );
-        }
-
-        // wait for connection
-        bool bConnected = false;
-
-        while ( !bConnected )
-        {
-            if ( connect( mClient_GT, (struct sockaddr *)&server, sizeof( server ) ) == -1 )
-            {
-                fprintf( stderr, "connect() failed: %s\n", strerror( errno ) );
-                sleep( 1 );
-            }
-            else
-                bConnected = true;
-        }
-
-        fprintf( stderr, "connected!\n" );
-    }
-
-
-    void ViresInterface::readNetwork()
+    void ViresInterface::readNetwork(int mClient)
     {
         static char*         szBuffer       = 0;
         int                  ret            = 0;
@@ -186,7 +117,7 @@ namespace Framework {
         {
             ret = 0;        // nothing read yet
 
-            int noReady = getNoReadyRead( mClient_GT );
+            int noReady = getNoReadyRead( mClient );
 
             if ( noReady < 0 )
             {
@@ -197,7 +128,7 @@ namespace Framework {
             if ( noReady > 0 )
             {
                 // read data
-                if ( ( ret = recv( mClient_GT, szBuffer, DEFAULT_BUFFER, 0 ) ) != 0 )
+                if ( ( ret = recv( mClient, szBuffer, DEFAULT_BUFFER, 0 ) ) != 0 )
                 {
                     // do we have to grow the buffer??
                     if ( ( sBytesInBuffer + ret ) > sBufferSize )
@@ -484,12 +415,8 @@ namespace Framework {
         return retVal;
     }
 
-    void ViresInterface::sendRDBTrigger() {
-        sendRDBTrigger(mClient, mSimTime, mSimFrame );
-    }
-
-    void ViresInterface::sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame )
-    {
+    void ViresInterface::sendRDBTrigger(int mClient) {
+        //sendRDBTrigger(mClient, mSimTime, mSimFrame );
         // is the socket available?
         if ( mClient < 0 )
             return;
@@ -500,7 +427,8 @@ namespace Framework {
         myHandler.initMsg();
 
         // add extended package for the object state
-        RDB_TRIGGER_t *trigger = ( RDB_TRIGGER_t* ) myHandler.addPackage( simTime, simFrame, RDB_PKG_ID_TRIGGER, 1, true );
+        RDB_TRIGGER_t *trigger = ( RDB_TRIGGER_t* ) myHandler.addPackage( mSimTime, mSimFrame, RDB_PKG_ID_TRIGGER, 1,
+                                                                          true );
 
         if ( !trigger )
         {
@@ -508,7 +436,7 @@ namespace Framework {
             return;
         }
 
-        trigger->frameNo = simFrame;
+        trigger->frameNo = mSimFrame;
         trigger->deltaT  = mDeltaTime;
 
         fprintf( stderr, "sendRDBTrigger: sending trigger, deltaT = %.4lf\n", trigger->deltaT );

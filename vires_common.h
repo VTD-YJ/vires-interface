@@ -5,11 +5,8 @@
 #ifndef VIRES_TUTORIAL_VIRES_COMMON_H
 #define VIRES_TUTORIAL_VIRES_COMMON_H
 
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-#include <string.h>
+#include <netinet/in.h>
 #include "vires/RDBHandler.hh"
 
 #define DEFAULT_PORT        48190   /* for image port it should be 48192 */
@@ -31,10 +28,9 @@ namespace Framework {
         bool         mVerbose      = false;                             // run in verbose mode?
         int          mForceBuffer  = -1;                                // force reading one of the SHM buffers (0=A, 1=B)
         char         szServer[128];                                     // Server to connect to
-        int          iPort         = DEFAULT_PORT;                      // Port on server to connect to
+        int          iPort_Trigger         = DEFAULT_PORT;                      // Port on server to connect to
+        int          iPort_MM         = DEFAULT_RX_PORT;                      // Port on server to connect to
         int          mHaveImage    = 0;                                 // is an image available?
-        int          mClient       = -1;                                // client socket
-        int          mClient_GT    = -1;
         unsigned int mSimFrame     = 0;                                 // simulation frame counter
         double       mSimTime      = 0.0;                               // simulation time
         double       mDeltaTime    = 0.01;                              // simulation step width
@@ -68,17 +64,17 @@ namespace Framework {
 /**
 * open the network interface for sending trigger data
 */
-        void openNetwork();
+        int openNetwork(int iPort);
 
 /**
 * open the network interface for receiving ground truth data
 */
-        void openNetwork_GT();
+        int openNetwork_GT(int iPort);
 
 /**
 * make sure network data is being read
 */
-        void readNetwork();
+        void readNetwork(int mClient);
 
 /**
 * open the shared memory segment for reading image data
@@ -131,9 +127,8 @@ namespace Framework {
 * @param simTime    internal simulation time
 * @param simFrame   internal simulation frame
 */
-        void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame );
 
-        void sendRDBTrigger();
+        void sendRDBTrigger(int mClient);
 
         unsigned int getShmKey() {
             return mShmKey;
@@ -186,8 +181,12 @@ namespace Framework {
             return mLastShmFrame;
         }
 
-        void setPort(int val) {
-            iPort = val;
+        void setTriggerPort(int val) {
+            iPort_Trigger = val;
+        }
+
+        void setMMPort(int val) {
+            iPort_MM = val;
         }
 
         virtual void parseStartOfFrame(const double &simTime, const unsigned int &simFrame);
