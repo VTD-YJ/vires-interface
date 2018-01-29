@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include "vires/RDBHandler.hh"
-
+#include "vires/scpIcd.h"
 #define DEFAULT_PORT        48190   /* for image port it should be 48192 */
 #define DEFAULT_BUFFER      204800
 
@@ -128,6 +128,8 @@ namespace Framework {
 * @param simFrame   internal simulation frame
 */
 
+        void checkForShmData();
+
         void sendRDBTrigger(int mClient);
 
         unsigned int getShmKey() {
@@ -188,6 +190,10 @@ namespace Framework {
         void setMMPort(int val) {
             iPort_MM = val;
         }
+
+        void readScpNetwork ( int sClient );
+
+        void sendSCPMessage( int sClient, const char* text );
 
         virtual void parseStartOfFrame(const double &simTime, const unsigned int &simFrame);
 
