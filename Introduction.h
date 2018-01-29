@@ -23,30 +23,24 @@ VTD Connector
 /**
 
  prjParameter in .vpj file is picked up from Projects/Current/Config/<filename>
- <Testcase author="" created="06.06.2011/18:49:16" modified="25.01.2018/14:57:27" name="Unnamed" prjParameter="RDBtrigger" scenario="Current/Scenarios/two.xml">
-"<SimCtrl><UnloadSensors /><LoadScenario filename="/local/git/PriorityGraphSensors/VIRES/VTD.2.0/Data/Projects/Current/Scenarios/two.xml" /><Start mode="operation" /></SimCtrl>"
+ <Testcase author="" created="06.06.2011/18:49:16" modified="25.01.2018/14:57:27" name="Unnamed"
+ prjParameter="RDBtrigger" scenario="Current/Scenarios/two.xml">
+ "<SimCtrl><UnloadSensors /><LoadScenario filename="/local/git/PriorityGraphSensors/VIRES/VTD.2
+ .0/Data/Projects/Current/Scenarios/two.xml" /><Start mode="operation" /></SimCtrl>"
  .
  .
  .
  .
  </Testcase>
 
-
-
  48195 - RDBout - MM
  48190 - RDBraw - MM
  rdbsniffer -c tcp -p port
 
- VIRES Virtual Test Drive is a tool chain and modular framework for the provision of virtual environments in
- engineering simulations for the automotive and railroad industry.
- The dongle can be configured using export VI_LIC_DEVICE="name_of_the_dongle" in vtdStart.sh
- VTD Starts in config mode - REd in Task Control and green is ParameterServer. This is called Config mode.
-
-
- If you do not click the Apply buttong, then you can change the paramters using the parameter browser. In case you
+ If you do not click the Apply button, then you can change the paramters using the parameter browser. In case you
  have already clicked the Apply button, then you can go back to the config mode, by pressing the Configure button.
- Ofcourse you have to stop a running simualtion first. Thereafter all processes but Task Control, Parameter Server
- and GUI will be stopped.
+ Ofcourse you have to stop a running simualtion first. Thereafter all processes like IG, ModuleManager will stop, but
+ Task Control,  Parameter Server and GUI will be continue.
 
  The video is started by clicking on the video record button on the left and is stopped by clicking on the video stop
  buton on the right. The conversion processes are described in Setups/Common/Scripts/vrecConvert.sh.
@@ -118,7 +112,6 @@ VTD Connector
                       dataSize    = 0
                       elementSize = 0
 
- execute the script as follows: sudo ./instMultiUser.sh -r VTD.2.0
 
  Single Ray
 
@@ -154,135 +147,11 @@ VTD Connector
  Coordinate Systems
  VIRES Installation
 
- Demo
- VTD.2.0/bin
- VTD.2.0/Data/Distros/Current
- VTD.2.0/Data/Setups/Current
- VTD.2.0/Data/Setups/Standard
- VTD.2.0/Data/Setups/Common
- VTD.2.0/Data/Setups/Stereo
- VTD.2.0/Data/Setups/Common
- VTD.2.0/Data/Setups/Joystick
- VTD.2.0/Data/Setups/DualHost
- VTD.2.0/Data/Setups/Standard.noIG
- VTD.2.0/Data/Setups/OpenCRG
- VTD.2.0/Data/Projects/Default
- VTD.2.0/Data/Projects/Current
- VTD.2.0/Data/Projects/SampleProject
- VTD.2.0/Data/Projects/OpenCRG
- VTD.2.0/doc
- VTD.2.0/Develop/Framework
- VTD.2.0/Develop/Communication
- VTD.2.0/Runtime/Core/IG64
- VTD.2.0/Runtime/Tools/ModelConverter
- VTD.2.0/Runtime/Tools/Bugreport
- VTD.2.0/Runtime/Tools/Installation
- VTD.2.0/Runtime/Tools/VehicleController
- VTD.2.0/Runtime/Tools/Drivers
- VTD.2.0/Runtime/Tools/LicServer
- VTD.2.0/Runtime/Tools/RDBSniffer
- 
- 
- Plugin
- VTD.2.0/Develop/IG64/Lib
- VTD.2.0/Develop/IG64/doc
- VTD.2.0/Develop/IG64/bin
- VTD.2.0/Develop/IG64/Plugins/CarSim
- VTD.2.0/Develop/IG64/Plugins/FramebufferReader
- VTD.2.0/Develop/IG64/Plugins/OptiXPluginExample
- VTD.2.0/Develop/IG64/Plugins/PedestriansBDI_Base
- VTD.2.0/Develop/IG64/Plugins/OptiXLidar
- VTD.2.0/Develop/IG64/Plugins/EnvironmentManager
- VTD.2.0/Develop/IG64/Plugins/Symbols
- VTD.2.0/Develop/IG64/Plugins/PedestriansBDI_v13
- VTD.2.0/Develop/IG64/Plugins/SpecialEffects
- VTD.2.0/Develop/IG64/Framework
- VTD.2.0/Develop/IG64/ViresLibs/VTDFramework
- VTD.2.0/Develop/IG64/Cmake/
- VTD.2.0/Develop/IG64/3rdParty/Optix
- VTD.2.0/Develop/IG64/3rdParty/CUDA
- VTD.2.0/Develop/IG64/3rdParty/Boost
- VTD.2.0/Develop/IG64/3rdParty/OpenSceneGraph
- VTD.2.0/Develop/IG64/Tools/RDBComTester
- VTD.2.0/Develop/IG64/Tools/BuildTools
- 
- VTD.2.0/Data/Projects/Demo.VIGPlugin
- VTD.2.0/Data/Projects/Optix.NonVisualSpectrum
- VTD.2.0/Data/Projects/Optix
- VTD.2.0/Data/Projects/Demo.OptiXPlugin
- VTD.2.0/Data/Projects/OptiXLidar
- VTD.2.0/Data/Distros/Distro/Databases/OptiX/
- VTD.2.0/Data/Setups/Demo.VIGPlugin
- 
- ROD Package
- VTD.2.0/Runtime/Tools/RodDistro_2638_Rod64b_4.5.5
- 
- instMultiUser.sh : This file simply creates symbolic links. The file is interactive and hence just run the file.
- 
- selectStarup.sh : This file simply changes the setup. One can change setup from default to NoIG or something new for
- example.
- 
- https://secure.vires.com/demo/vtd/vtd.2.0.3.Demo.Road.20170131.tgz
- https://secure.vires.com/demo/vtd/vtd.2.0.3.addOns.ROD64b.Standard_Dongle_20170209.tgz
- 
- login: demo
- OpenSesame: viresDemo
- 
- tar -xvzf vtd.2.0.3.Demo.Road.20170131.tgz -C /local/development
- tar -xvzf vtd.2.0.3.addOns.ROD64b.Standard_Dongle_20170209.tgz -C /local/development
- Run instMultiUser.sh from /local/development. It will move the binaries and other generic stuff to /opt and /var and
- make symlinks to /local/development.
- Its better to chown /local/development/bin to root.
- 
- \subsection{License}
- 
- \textbf{License File and Location}
- The license file needs to be placed under VTD2.0/bin/
- Please make sure the license file obtained has the same MAC Address as the Dongle.
- 
- \textbf{License Hardware Configuration}
- Wireless Dongle
- /etc/modules.load/modules.conf - write mt7601u to load this module at run time.
- To check simply modprobe mt7601u
- 
- 14.04
- The precondition is that the wifi dongle should be loaded in ifconfig.
- sudo apt-add-repository ppa:thopiekar/mt7601
- sudo apt-get update
- sudo apt-get install mt7601-sta-dkms
- 
- Sempre Wireless Dongles use MediaTek drivers ( mt7601u ). The following will load the driver mt7601Usta to be found
- under
- /lib/modules/3.13.0-65-generic/updates/dkms/mt7601Usta.ko
- Please check using modinfo mt7601Usta
- 
- 16.04 - automatic because the drivers is already built in the kernel
- To check please invoke lsmod | grep mt7601u
- 
- if the device is not present in ifconfig, then check for ifconfig -a
- Then start the link ip link set dev  up
- 
- Open the file Data/Setups/Current/Config/SimServer/simServer.xml
- Add an environment variable: <EnvVar name="VI_LIC_DEVICE" val="ed8sf0" /> (replace ed8sf0 with the name of your device)
- Find the name of the device by using ifconfig.
- 
- In order for VTD to work correctly in terms of network communication, please make sure that your system has a valid
- hostname and a valid host address. If you are not connected to any network, please set a static address for your
- system. You may also just edit the file /etc/hosts and add the entry
- 127.0.0.2 nameOfYourHost
- 
-Single Ray
 
 
-It computes the intersection of this ray and the bounding box of other objects (vehicles); it returns the position of these objects in sensor co-ordinates with the origin being at the sensor's mounting point.
+ Real-Time Ray-Tracing (via Optix)
 
-
-The multi-ray sensor provides a means to interact with the actual geometry of the 3d database from within the moduleManager. For this purpose, there is a communication channel between MM and the imageGenerator. This means that you may also take continuous features of the environment (e.g. hills, road surface) into account for the sensing.
-
-
-    Real-Time Ray-Tracing (via Optix)
-
-The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tracing engine.
+ The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tracing engine.
 
        woody./PathToYourWorkingDir/>cp vtd.x.x.addOns.*optix*.yyyymmdd.tgz .
    woody./PathToYourWorkingDir/>tar -xzvf vtd.x.x.addOns.*optix*.yyyymmdd.tgz .
@@ -708,12 +577,6 @@ The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tra
 
  High Density Rendering
 
- Difference between ray tracing and beam tracing:
- Rays have no thickness, but beams are shaped as unbounded pyramids with polygonal cross sections. The idea is since
- 1984.
- Primarily two things: Ray tracing and scan line tracing.
- Ray tracing is a very complex algorithm, but in short there are
-
  start Standard_test/Movement
  Check mark to accept the parameters
  Start the simulation.
@@ -721,6 +584,137 @@ The VIG-OptiX SDK is a real-time ray tracing plugin using NVIDIA's OptiX ray tra
  shmReader -k:33130 ( default is 33130 ) is present at VTD.2.0/Develop/Communication/RDBShmSample
 
  The shmReader reads the shared memory over RDB.
+ Client Side - VIRES side
+ moduleManager.xml (
  The trigger sends the trigger over RDB via the tcp port 48190
+
+ ---------------------------------------------------------------------
+ Installation:
+
+ VIRES Virtual Test Drive is a tool chain and modular framework for the provision of virtual environments in
+ engineering simulations for the automotive and railroad industry.
+
+ tar -xvzf vtd.2.0.3.Demo.Road.20170131.tgz -C /local/development
+ tar -xvzf vtd.2.0.3.addOns.ROD64b.Standard_Dongle_20170209.tgz -C /local/development
+ Run instMultiUser.sh from /local/development. It will move the binaries and other generic stuff to /opt and /var and
+ make symlinks to /local/development.
+ Its better to chown /local/development/bin to root.
+
+ Demo
+ VTD.2.0/bin
+ VTD.2.0/Data/Distros/Current
+ VTD.2.0/Data/Setups/Current
+ VTD.2.0/Data/Setups/Standard
+ VTD.2.0/Data/Setups/Common
+ VTD.2.0/Data/Setups/Stereo
+ VTD.2.0/Data/Setups/Common
+ VTD.2.0/Data/Setups/Joystick
+ VTD.2.0/Data/Setups/DualHost
+ VTD.2.0/Data/Setups/Standard.noIG
+ VTD.2.0/Data/Setups/OpenCRG
+ VTD.2.0/Data/Projects/Default
+ VTD.2.0/Data/Projects/Current
+ VTD.2.0/Data/Projects/SampleProject
+ VTD.2.0/Data/Projects/OpenCRG
+ VTD.2.0/doc
+ VTD.2.0/Develop/Framework
+ VTD.2.0/Develop/Communication
+ VTD.2.0/Runtime/Core/IG64
+ VTD.2.0/Runtime/Tools/ModelConverter
+ VTD.2.0/Runtime/Tools/Bugreport
+ VTD.2.0/Runtime/Tools/Installation
+ VTD.2.0/Runtime/Tools/VehicleController
+ VTD.2.0/Runtime/Tools/Drivers
+ VTD.2.0/Runtime/Tools/LicServer
+ VTD.2.0/Runtime/Tools/RDBSniffer
+
+
+ Plugin
+ VTD.2.0/Develop/IG64/Lib
+ VTD.2.0/Develop/IG64/doc
+ VTD.2.0/Develop/IG64/bin
+ VTD.2.0/Develop/IG64/Plugins/CarSim
+ VTD.2.0/Develop/IG64/Plugins/FramebufferReader
+ VTD.2.0/Develop/IG64/Plugins/OptiXPluginExample
+ VTD.2.0/Develop/IG64/Plugins/PedestriansBDI_Base
+ VTD.2.0/Develop/IG64/Plugins/OptiXLidar
+ VTD.2.0/Develop/IG64/Plugins/EnvironmentManager
+ VTD.2.0/Develop/IG64/Plugins/Symbols
+ VTD.2.0/Develop/IG64/Plugins/PedestriansBDI_v13
+ VTD.2.0/Develop/IG64/Plugins/SpecialEffects
+ VTD.2.0/Develop/IG64/Framework
+ VTD.2.0/Develop/IG64/ViresLibs/VTDFramework
+ VTD.2.0/Develop/IG64/Cmake/
+ VTD.2.0/Develop/IG64/3rdParty/Optix
+ VTD.2.0/Develop/IG64/3rdParty/CUDA
+ VTD.2.0/Develop/IG64/3rdParty/Boost
+ VTD.2.0/Develop/IG64/3rdParty/OpenSceneGraph
+ VTD.2.0/Develop/IG64/Tools/RDBComTester
+ VTD.2.0/Develop/IG64/Tools/BuildTools
+
+ VTD.2.0/Data/Projects/Demo.VIGPlugin
+ VTD.2.0/Data/Projects/Optix.NonVisualSpectrum
+ VTD.2.0/Data/Projects/Optix
+ VTD.2.0/Data/Projects/Demo.OptiXPlugin
+ VTD.2.0/Data/Projects/OptiXLidar
+ VTD.2.0/Data/Distros/Distro/Databases/OptiX/
+ VTD.2.0/Data/Setups/Demo.VIGPlugin
+
+ ROD Package
+ VTD.2.0/Runtime/Tools/RodDistro_2638_Rod64b_4.5.5
+
+ instMultiUser.sh : This file simply creates symbolic links. The file is interactive and hence just run the file.
+
+ selectStarup.sh : This file simply changes the setup. One can change setup from default to NoIG or something new for
+ example.
+
+ https://secure.vires.com/demo/vtd/vtd.2.0.3.Demo.Road.20170131.tgz
+ https://secure.vires.com/demo/vtd/vtd.2.0.3.addOns.ROD64b.Standard_Dongle_20170209.tgz
+
+ login: demo
+ OpenSesame: viresDemo
+
+
+ The dongle can be configured using export VI_LIC_DEVICE="name_of_the_dongle" in vtdStart.sh
+ VTD Starts in config mode - RED is Task Control and GREEN is ParameterServer. This is called Config mode.
+
+ License
+
+ The license file needs to be placed under VTD2.0/bin/
+ Please make sure the license file obtained has the same MAC Address as the Dongle.
+
+ License Hardware Configuration
+ Wireless Dongle
+ /etc/modules.load/modules.conf - write mt7601u to load this module at run time.
+ To check simply modprobe mt7601u
+
+ 14.04
+ The precondition is that the wifi dongle should be loaded in ifconfig.
+ sudo apt-add-repository ppa:thopiekar/mt7601
+ sudo apt-get update
+ sudo apt-get install mt7601-sta-dkms
+
+ Sempre Wireless Dongles use MediaTek drivers ( mt7601u ). The following will load the driver mt7601Usta to be found
+ under
+ /lib/modules/3.13.0-65-generic/updates/dkms/mt7601Usta.ko
+ Please check using modinfo mt7601Usta
+
+ 16.04 - automatic because the drivers is already built in the kernel
+ To check please invoke lsmod | grep mt7601u
+
+ if the device is not present in ifconfig, then check for ifconfig -a
+ Then start the link ip link set dev  up
+
+ Open the file Data/Setups/Current/Config/SimServer/simServer.xml
+ Add an environment variable: <EnvVar name="VI_LIC_DEVICE" val="ed8sf0" /> (replace ed8sf0 with the name of your device)
+ Find the name of the device by using ifconfig.
+
+ In order for VTD to work correctly in terms of network communication, please make sure that your system has a valid
+ hostname and a valid host address. If you are not connected to any network, please set a static address for your
+ system. You may also just edit the file /etc/hosts and add the entry
+ 127.0.0.2 nameOfYourHost
+
+
+
 
 */
