@@ -36,7 +36,7 @@ add_library(viresrdb SHARED ${SOURCE_FILES})
 #install(FILES "vires/RDBHandler.hh" DESTINATION "include/vires/vires")
 install(FILES "vires_common.h" DESTINATION "include/vires")
 
-set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "vires/viRDBIcd.h;vires/RDBHandler.hh")
+set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "vires/scpIcd.h;vires/viRDBIcd.h;vires/RDBHandler.hh")
 install(TARGETS viresrdb
         LIBRARY DESTINATION lib
         PUBLIC_HEADER DESTINATION include/vires/vires
