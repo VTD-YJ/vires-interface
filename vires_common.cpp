@@ -308,7 +308,7 @@ namespace Framework {
 * open the shared memory segment
 */
 
-    void ViresInterface::openShm()
+    void ViresInterface::openShm(unsigned int shmKey)
     {
         // do not open twice!
         if ( mShmPtr )
@@ -316,7 +316,7 @@ namespace Framework {
 
         int shmid = 0;
 
-        if ( ( shmid = shmget( mShmKey, 0, 0 ) ) < 0 )
+        if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
             return;
 
         if ( ( mShmPtr = (char *)shmat( shmid, (char *)0, 0 ) ) == (char *) -1 )

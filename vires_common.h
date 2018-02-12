@@ -32,7 +32,6 @@ namespace Framework {
         size_t       mIgOutShmTotalSize = 0;                                          // remember the total size of the SHM segment
         // the memory and message management
 
-        unsigned int mShmKey       = RDB_SHM_ID_IMG_GENERATOR_OUT;      // key of the SHM segment
         unsigned int mCheckMask    = RDB_SHM_BUFFER_FLAG_TC;
         void*        mShmPtr       = 0;                                 // pointer to the SHM segment
         size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
@@ -87,7 +86,7 @@ namespace Framework {
 * open the shared memory segment for reading image data
 */
         void* openIgOutShm( int key, size_t *size );
-        void openShm();
+        void openShm(unsigned int shmKey);
 
 /**
 * check and parse the contents of the shared memory
@@ -143,14 +142,6 @@ namespace Framework {
         void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool
         requestImage, double deltaTime   );
 
-
-        unsigned int getShmKey() {
-            return mShmKey;
-        }
-
-        void setShmKey(unsigned int val ) {
-            mShmKey = val;
-        }
         void *getShmPtr() {
             return mShmPtr;
         }
