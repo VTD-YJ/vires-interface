@@ -5,9 +5,16 @@
  * (c) VIRES GmbH
  * @author Marius Dupuis
  ********************************************************/
+
 /*****************************************************/
 /**
    @page RDB_CHANGE_LOG RDB Change Log
+-  10.03.2017  version 0x011E
+               introduced RDB_SYNC_CMD_RENDER_TARGET_FRAME
+               converted a spare in RDB_CUSTOM_OBJECT_CTRL_TRACK_t into a variable for the time stamp
+               added a new flag for custom track control mode: RDB_CUSTOM_TRACK_CTRL_FLAG_DIRECT_MODE
+               added message RDB_PKG_ID_CUSTOM_LOOK_AHEAD and associated structure RDB_CUSTOM_LOOK_AHEAD_t
+               added definitions RDB_UNIT_xxx
 -  27.09.2016  version 0x011D
                introduced RDB_PKG_ID_RT_PERFORMANCE and RDB_RT_PERFORMANCE_t
                introduced RDB_PKG_ID_CUSTOM_LIGHT_GROUP_B and RDB_CUSTOM_LIGHT_GROUP_B_t
@@ -23,7 +30,7 @@
                introducing road position flag RDB_ROAD_POS_FLAG_OFFROAD
                added FOV offsets for sensor information RDB_SENSOR_STATE_t (converted two spares)
                added RDB_PKG_ID_IG_FRAME and RDB_IG_FRAME_t
-               converted first half of spare in RDB_TRIGGER_T into member "features" to limit update to certain subset of the modules
+               converted first half of spare in RDB_TRIGGER_t into member "features" to limit update to certain subset of the modules
 -  09.12.2015  version 0x011A
                added RDB_FREESPACE_t and 
                RDB_PKG_ID_FREESPACE and
@@ -427,7 +434,7 @@
 #define RDB_FEEDBACK_PORT  48191       /**< port for RDB feedback to taskControl    @version 0x0100 */
 #define RDB_IMAGE_PORT     48192       /**< port for RDB image data                 @version 0x0100 */
 #define RDB_MAGIC_NO       35712       /**< magic number                            @version 0x0100 */
-#define RDB_VERSION       0x011D       /**< upper byte = major, lower byte = minor  @version 0x011D */
+#define RDB_VERSION       0x011E       /**< upper byte = major, lower byte = minor  @version 0x011D */
 /** @} */
 
 /** @addtogroup ARRAY_SIZES
@@ -507,6 +514,7 @@
 #define RDB_PKG_ID_CUSTOM_LIGHT_B           10002     /**< custom light control package                                     @version 0x0119 */
 #define RDB_PKG_ID_CUSTOM_LIGHT_A           10003     /**< custom light control package                                     @version 0x0119 */
 #define RDB_PKG_ID_CUSTOM_LIGHT_GROUP_B     10004     /**< custom light control package                                     @version 0x011D */
+#define RDB_PKG_ID_CUSTOM_LOOK_AHEAD        10005     /**< custom look-ahead package                                        @version 0x011E */
 #define RDB_PKG_ID_CUSTOM_AUDI_FORUM        12000     /**< parameters for AUDI Forum                                        @version 0x0100 */
 #define RDB_PKG_ID_CUSTOM_OPTIX_START       12100     /**< start of custom packages for OPTIX applications                  @version 0x0100 */
 #define RDB_PKG_ID_OPTIX_BUFFER             12101     /**< custom optix buffer for RDBInterface Plugin                      @version 0x010C */
@@ -850,22 +858,31 @@
  *  ------ scope of the target of a dynamic element ------
  *  @{
  */
-#define RDB_DYN_EL_SCOPE_UNKNOWN            0       /** < scope of a dynamic element definition in unknown                           @version 0x011B */
-#define RDB_DYN_EL_SCOPE_STATIC_DB          1       /** < scope of a dynamic element definition in the static database               @version 0x011B */
-#define RDB_DYN_EL_SCOPE_DYN_OBJECT         2       /** < scope of a dynamic element definition in a dynamic object                  @version 0x011B */
-#define RDB_DYN_EL_SCOPE_ANY                3       /** < scope of a dynamic element definition in any object in the data tree       @version 0x011B */
-#define RDB_DYN_EL_SCOPE_FIRST              4       /** < scope of a dynamic element definition in the first object in the data tree @version 0x011B */
-#define RDB_DYN_EL_SCOPE_STATIC_DB_SIGNAL   5       /** < scope of a signal definition in the static database                        @version 0x011B */
-#define RDB_DYN_EL_SCOPE_STATIC_DB_SWITCH   6       /** < scope of a switch definition in the static database                        @version 0x011B */
+#define RDB_DYN_EL_SCOPE_UNKNOWN            0       /**< scope of a dynamic element definition in unknown                           @version 0x011B */
+#define RDB_DYN_EL_SCOPE_STATIC_DB          1       /**< scope of a dynamic element definition in the static database               @version 0x011B */
+#define RDB_DYN_EL_SCOPE_DYN_OBJECT         2       /**< scope of a dynamic element definition in a dynamic object                  @version 0x011B */
+#define RDB_DYN_EL_SCOPE_ANY                3       /**< scope of a dynamic element definition in any object in the data tree       @version 0x011B */
+#define RDB_DYN_EL_SCOPE_FIRST              4       /**< scope of a dynamic element definition in the first object in the data tree @version 0x011B */
+#define RDB_DYN_EL_SCOPE_STATIC_DB_SIGNAL   5       /**< scope of a signal definition in the static database                        @version 0x011B */
+#define RDB_DYN_EL_SCOPE_STATIC_DB_SWITCH   6       /**< scope of a switch definition in the static database                        @version 0x011B */
 /** @} */
 
 /** @addtogroup RDB_RAY_TYPE
  *  ------ type of ray contained in ray message ------
  *  @{
  */
-#define RDB_RAY_TYPE_UNKNOWN            0       /** < scope of a dynamic element definition in unknown                           @version 0x011C */
-#define RDB_RAY_TYPE_EMIT               1       /** < emitted ray                                                                @version 0x011C */
-#define RDB_RAY_TYPE_HIT                2       /** < hit point information                                                      @version 0x011C */
+#define RDB_RAY_TYPE_UNKNOWN            0       /**< scope of a dynamic element definition in unknown                           @version 0x011C */
+#define RDB_RAY_TYPE_EMIT               1       /**< emitted ray                                                                @version 0x011C */
+#define RDB_RAY_TYPE_HIT                2       /**< hit point information                                                      @version 0x011C */
+/** @} */
+
+/** @addtogroup RDB_UNIT
+ *  ------ definition of physical units ------
+ *  @{
+ */
+#define RDB_UNIT_DEFAULT                0       /**< default unit                                                               @version 0x011E */
+#define RDB_UNIT_M                      1       /**< meters                                                                     @version 0x011E */
+#define RDB_UNIT_S                      2       /**< seconds                                                                    @version 0x011E */
 /** @} */
 
 
@@ -1234,6 +1251,7 @@
 #define RDB_SYNC_CMD_RENDER_CONTINUOUS          0x00000080      /**< target will render as usual                            @version 0x010E */
 #define RDB_SYNC_CMD_RENDER_PAUSE               0x00000100      /**< target will pause rendering completely                 @version 0x010E */
 #define RDB_SYNC_CMD_RENDER_SINGLE_FRAME        0x00000200      /**< target will render a single frame and pause then       @version 0x010E */
+#define RDB_SYNC_CMD_RENDER_TARGET_FRAME        0x00000400      /**< target will render a specific frame and pause then     @version 0x011E */
 /** @} */
 
 /** @addtogroup RDB_TRAJECTORY_FLAG
@@ -1312,6 +1330,7 @@
 #define RDB_CUSTOM_TRACK_CTRL_FLAG_VIS_SENSOR_D  0x0010  /**< object is visible in sensor D                                   @version 0x0119 */
 #define RDB_CUSTOM_TRACK_CTRL_FLAG_NAME_BY_ID    0x0100  /**< model name  is derived from ID and model is addressed via name  @version 0x0119 */
 #define RDB_CUSTOM_TRACK_CTRL_FLAG_PLAYER_ACTIVE 0x0200  /**< if set, player is active                                        @version 0x0119 */
+#define RDB_CUSTOM_TRACK_CTRL_FLAG_DIRECT_MODE   0x0400  /**< if set, player is active                                        @version 0x0119 */
 /** @} */
 
 /** @addtogroup RDB_CUSTOM_TRACK_CTRL_VALIDITY
@@ -1989,7 +2008,9 @@ typedef struct
     float    maxAccelS;             /**< maximum acceleration along road                                              @unit m/s2                                                     @version 0x0119 */
     float    accelTgt;              /**< target acceleration (vehicle system)                                         @unit m/s2                                                     @version 0x0119 */
     uint32_t validityFlags;         /**< flags which of the above inputs are valid                                    @unit @link RDB_CUSTOM_TRACK_CTRL_VALIDITY @endlink            @version 0x0119 */
-    uint32_t spare[4];              /**< we'll certainly have some more ideas....                                     @unit _                                                        @version 0x0119 */
+    uint8_t  canTimeStamp;          /**< time stamp on CAN bus                                                        @unit _                                                        @version 0x0119 */
+    uint8_t  spare0[3];             /**< we'll certainly have some more ideas....                                     @unit _                                                        @version 0x0119 */
+    uint32_t spare[3];              /**< we'll certainly have some more ideas....                                     @unit _                                                        @version 0x0119 */
 } RDB_CUSTOM_OBJECT_CTRL_TRACK_t;
 
 /** ------ freespace description package ------ */
@@ -2098,6 +2119,19 @@ typedef struct
     float       actualFrameTime;  /**< actual (measured) duration of last frame             @unit [s]                                       @version 0x011D */
     uint32_t    spare1[6];        /**< some more spares                                     @unit _                                         @version 0x011D */
 } RDB_RT_PERFORMANCE_t;
+
+/** ------ custom look-ahead package ------ */
+typedef struct
+{
+    uint32_t playerId;              /**< unique player ID                                                             @unit _                                                        @version 0x011E */
+    float    distance;              /**< distance for which the look ahead is valid                                   @unit m or s                                                   @version 0x011E */
+    uint8_t  distUnit;              /**< unit of the distance value                                                   @unit @link RDB_UNIT @endlink                                  @version 0x011E */
+    uint8_t  spare0[3];             /**< we'll certainly have some more ideas....                                     @unit _                                                        @version 0x011E */
+    float    laneOffset;            /**< lane offset at given distance                                                @unit m                                                        @version 0x011E */
+    float    hdgRel;                /**< relative heading at given distance                                           @unit rad                                                      @version 0x011E */
+    float    curvHor;               /**< horizontal curvature at given distance                                       @unit 1/m                                                      @version 0x011E */
+    uint32_t spare[8];              /**< we'll certainly have some more ideas....                                     @unit _                                                        @version 0x011E */
+} RDB_CUSTOM_LOOK_AHEAD_t;
 
 /** ------ header of a complete message ------ */
 typedef struct

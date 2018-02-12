@@ -156,8 +156,11 @@ RDBHandler::pkgId2size( unsigned int pkgId, bool extended )
         case RDB_PKG_ID_CUSTOM_OBJECT_CTRL_TRACK:
             return sizeof( RDB_CUSTOM_OBJECT_CTRL_TRACK_t );
             
+        case RDB_PKG_ID_CUSTOM_LOOK_AHEAD:
+            return sizeof( RDB_CUSTOM_LOOK_AHEAD_t );
+            
         default:
-            fprintf( stderr, "RDBHandler::pkgId2size: request for size of unknown package <%d>. Returning zero", pkgId );
+            //fprintf( stderr, "RDBHandler::pkgId2size: request for size of unknown package <%d>. Returning zero", pkgId );
             return 0;
     }
 }
@@ -316,6 +319,9 @@ RDBHandler::pkgId2string( unsigned int pkgId )
             
         case RDB_PKG_ID_CUSTOM_OPTIX_END:
             return std::string( "RDB_PKG_ID_CUSTOM_OPTIX_END" );
+            
+        case RDB_PKG_ID_CUSTOM_LOOK_AHEAD:
+            return std::string( "RDB_PKG_ID_CUSTOM_LOOK_AHEAD" );
             
         default:
             return std::string( "unknown" );
@@ -1149,8 +1155,8 @@ RDBHandler::print( const RDB_COORD_t & info, unsigned char ident, bool csv, bool
 
     char* identStr = getIdentString( ident );
     
-    fprintf( stderr, "%sx/y/z = %.3f / %.3f / %.3f\n", identStr, info.x, info.y, info.z ); 
-    fprintf( stderr, "%sh/p/r = %.3f / %.3f / %.3f\n", identStr, info.h, info.p, info.r ); 
+    fprintf( stderr, "%sx/y/z = %.6f / %.6f / %.6f\n", identStr, info.x, info.y, info.z ); 
+    fprintf( stderr, "%sh/p/r = %.6f / %.6f / %.6f\n", identStr, info.h, info.p, info.r ); 
     fprintf( stderr, "%sflags = 0x%x, type = %s, system = %d\n", identStr, info.flags, coordType2string( info.type ).c_str(), info.system ); 
 }
 
@@ -1335,6 +1341,7 @@ RDBHandler::print( const RDB_OBJECT_STATE_t & state, bool extended, unsigned cha
         print( state.ext.speed, ident + 4, csv, csvHeader );
         print( state.ext.accel, ident + 4, csv, csvHeader );
         
+        fprintf( stderr, "%23s,", "distance" ); // added, see ticket #5906
         return;
     }
     
@@ -1351,6 +1358,7 @@ RDBHandler::print( const RDB_OBJECT_STATE_t & state, bool extended, unsigned cha
         print( state.ext.speed, ident + 4, csv, csvHeader );
         print( state.ext.accel, ident + 4, csv, csvHeader );
 
+        fprintf( stderr, "%+.16e,", state.ext.traveledDist ); // added, see ticket #5906
         return;
     }
 

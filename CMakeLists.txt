@@ -25,8 +25,7 @@ set(SOURCE_FILES
         #bosch_adsim/src/scp_transceiver.cpp
         )
 
-include_directories(${CMAKE_SOURCE_DIR}/vires)
-include_directories(${CMAKE_SOURCE_DIR}/bosch_adsim/include)
+include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${QT5_INCLUDE_DIR})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
 
@@ -37,6 +36,7 @@ add_library(viresrdb SHARED ${SOURCE_FILES})
 install(FILES "vires_common.h" DESTINATION "include/vires")
 
 set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "vires/scpIcd.h;vires/viRDBIcd.h;vires/RDBHandler.hh")
+
 install(TARGETS viresrdb
         LIBRARY DESTINATION lib
         PUBLIC_HEADER DESTINATION include/vires/vires
