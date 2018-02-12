@@ -609,9 +609,10 @@ namespace Framework {
         return retVal;
     }
 
-    void ViresInterface::sendRDBTrigger(int mClient) {
-        //sendRDBTrigger(mClient, mSimTime, mSimFrame );
-        // is the socket available?
+    void ViresInterface::sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool
+    requestImage ) {
+
+        int mClient = sendSocket;
         if ( mClient < 0 )
             return;
 
@@ -632,8 +633,9 @@ namespace Framework {
 
         trigger->frameNo = mSimFrame;
         trigger->deltaT  = mDeltaTime;
+        trigger->features = 0x1 | ( requestImage ? 0x2 : 0x0 );
 
-        fprintf( stderr, "sendRDBTrigger: sending trigger, deltaT = %.4lf\n", trigger->deltaT );
+        fprintf( stderr, "sendRDBTrigger: sending trigger, deltaT = %.4lf, requestImage = %s\n", trigger->deltaT, requestImage ? "true" : "false" );
 
         int retVal = send( mClient, ( const char* ) ( myHandler.getMsg() ), myHandler.getMsgTotalSize(), 0 );
 
@@ -643,6 +645,10 @@ namespace Framework {
         // increase internal counters
         mSimTime += mDeltaTime;
         mSimFrame++;
+    }
+
+    void ViresInterface::sendRDBTrigger(int mClient) {
+        sendRDBTrigger(mClient, mSimTime, mSimFrame, bool(1) );
     }
 
     void ViresInterface::parseStartOfFrame(const double &simTime, const unsigned int &simFrame) {

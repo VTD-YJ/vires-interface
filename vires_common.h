@@ -131,6 +131,8 @@ namespace Framework {
 
         void checkForShmData();
 
+        void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool requestImage );
+
         void sendRDBTrigger(int mClient);
 
         unsigned int getShmKey() {
