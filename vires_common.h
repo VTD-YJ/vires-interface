@@ -22,6 +22,16 @@ namespace Framework {
 /**
 * some global variables, considered "members" of this example
 */
+
+
+        // stuff for reading images
+        unsigned int mIgOutShmKey    = 0x816a;                                  // key of the SHM segment
+        unsigned int mIgOutCheckMask = RDB_SHM_BUFFER_FLAG_TC;
+        void*        mIgOutShmPtr    = 0;                                             // pointer to the SHM segment
+        int          mIgOutForceBuffer  = -1;
+        size_t       mIgOutShmTotalSize = 0;                                          // remember the total size of the SHM segment
+        // the memory and message management
+
         unsigned int mShmKey       = RDB_SHM_ID_IMG_GENERATOR_OUT;      // key of the SHM segment
         unsigned int mCheckMask    = RDB_SHM_BUFFER_FLAG_TC;
         void*        mShmPtr       = 0;                                 // pointer to the SHM segment
@@ -31,10 +41,6 @@ namespace Framework {
         char         szServer[128];                                     // Server to connect to
         int          iPort_Trigger         = DEFAULT_PORT;                      // Port on server to connect to
         int          iPort_MM         = DEFAULT_RX_PORT;                      // Port on server to connect to
-        int          mHaveImage    = 0;                                 // is an image available?
-        unsigned int mSimFrame     = 0;                                 // simulation frame counter
-        double       mSimTime      = 0.0;                               // simulation time
-        double       mDeltaTime    = 0.01;                              // simulation step width
         int          mLastShmFrame = -1;
 
 /**
@@ -80,6 +86,7 @@ namespace Framework {
 /**
 * open the shared memory segment for reading image data
 */
+        void* openIgOutShm( int key, size_t *size );
         void openShm();
 
 /**
@@ -129,18 +136,16 @@ namespace Framework {
 * @param simFrame   internal simulation frame
 */
 
+        void openCommunication(int iPort);
+
         void checkForShmData();
 
-        void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool requestImage );
+        void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool
+        requestImage, double deltaTime   );
 
-        void sendRDBTrigger(int mClient);
 
         unsigned int getShmKey() {
             return mShmKey;
-        }
-
-        unsigned int getSimFrame() {
-            return mSimFrame;
         }
 
         void setShmKey(unsigned int val ) {
@@ -172,14 +177,6 @@ namespace Framework {
 
         void setServer(const char *val) {
             strcpy(szServer, val );
-        }
-
-        int getHaveImage(void) {
-            return mHaveImage;
-        }
-
-        void setHaveImage(int val) {
-            mHaveImage = val;
         }
 
         int getLastShmFrame(void) {

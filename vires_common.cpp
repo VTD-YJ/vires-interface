@@ -610,7 +610,7 @@ namespace Framework {
     }
 
     void ViresInterface::sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool
-    requestImage ) {
+    requestImage, double deltaTime  ) {
 
         int mClient = sendSocket;
         if ( mClient < 0 )
@@ -622,7 +622,7 @@ namespace Framework {
         myHandler.initMsg();
 
         // add extended package for the object state
-        RDB_TRIGGER_t *trigger = ( RDB_TRIGGER_t* ) myHandler.addPackage( mSimTime, mSimFrame, RDB_PKG_ID_TRIGGER, 1,
+        RDB_TRIGGER_t *trigger = ( RDB_TRIGGER_t* ) myHandler.addPackage( simTime, simFrame, RDB_PKG_ID_TRIGGER, 1,
                                                                           true );
 
         if ( !trigger )
@@ -631,8 +631,8 @@ namespace Framework {
             return;
         }
 
-        trigger->frameNo = mSimFrame;
-        trigger->deltaT  = mDeltaTime;
+        trigger->frameNo = simFrame;
+        trigger->deltaT  = deltaTime;
         trigger->features = 0x1 | ( requestImage ? 0x2 : 0x0 );
 
         fprintf( stderr, "sendRDBTrigger: sending trigger, deltaT = %.4lf, requestImage = %s\n", trigger->deltaT, requestImage ? "true" : "false" );
@@ -642,13 +642,9 @@ namespace Framework {
         if ( !retVal )
             fprintf( stderr, "sendRDBTrigger: could not send trigger\n" );
 
-        // increase internal counters
-        mSimTime += mDeltaTime;
-        mSimFrame++;
-    }
-
-    void ViresInterface::sendRDBTrigger(int mClient) {
-        sendRDBTrigger(mClient, mSimTime, mSimFrame, bool(1) );
+        // increase internal counters ( this is currently done by the application
+        //mSimTime += mDeltaTime;
+        //mSimFrame++;
     }
 
     void ViresInterface::parseStartOfFrame(const double &simTime, const unsigned int &simFrame) {
@@ -683,8 +679,8 @@ namespace Framework {
         fprintf( stderr, "    width / height = %d / %d\n", data->width, data->height );
         fprintf( stderr, "    dataSize = %d\n", data->imgSize );
 
-        // ok, I have an image:
-        mHaveImage = 1;
+        // ok, I have an image: the application sets this through a overriden function
+        // mHaveImage = 1;
         char* image_data_=NULL;
         RDB_IMAGE_t* image = reinterpret_cast<RDB_IMAGE_t*>(data); /// raw image data
 
@@ -700,4 +696,7 @@ namespace Framework {
         // jump data header
         memcpy(image_data_, reinterpret_cast<char*>(image) + sizeof(RDB_IMAGE_t), image_info_.imgSize);
     }
+
 }
+
+
