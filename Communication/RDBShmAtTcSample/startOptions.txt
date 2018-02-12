@@ -1,0 +1,12 @@
+A) Start and read also the data from the sensor at the same time:
+
+./driverCtrlTest -m:0
+
+Sensor configuration:
+
+    <Port     name="RDBout" number="0" type="SHM" size="2345678" key="0x010203" doubleBuffer="true" releaseMask="0x0" sendEgo="true" />
+
+
+B) Start without reading SHM data from sensor:
+
+./driverCtrlTest -s:0

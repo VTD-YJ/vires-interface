@@ -15,7 +15,7 @@ message("Qt5 ${Qt5_FOUND} ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Co
 
 set(SOURCE_FILES
         # I am using vires RDB implementation
-        vires/RDBHandler.cc
+        Communication/Common/RDBHandler.cc
         vires_common.cpp
         # I am not using bosch rdb implementation because there is no substatial difference between vires and bosch.
         #bosch_adsim/src/rdb_camera_sensor.cpp
@@ -25,7 +25,7 @@ set(SOURCE_FILES
         #bosch_adsim/src/scp_transceiver.cpp
         )
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories("${CMAKE_SOURCE_DIR}/Communication")
 include_directories(${QT5_INCLUDE_DIR})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
 
@@ -35,9 +35,23 @@ add_library(viresrdb SHARED ${SOURCE_FILES})
 #install(FILES "vires/RDBHandler.hh" DESTINATION "include/vires/vires")
 install(FILES "vires_common.h" DESTINATION "include/vires")
 
-set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "vires/scpIcd.h;vires/viRDBIcd.h;vires/RDBHandler.hh")
+set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "Communication/Common/scpIcd.h;Communication/Common/viRDBIcd.h;Communication/Common/RDBHandler.hh")
 
 install(TARGETS viresrdb
         LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/vires/vires
+        PUBLIC_HEADER DESTINATION include/vires/Common
         )
+
+
+#echo "compiling shmReader..."
+#g++ -o shmReader ../Common/RDBHandler.cc ShmReader.cpp -I../Common/
+#echo "...done"
+
+#echo "compiling shmWriter..."
+#g++ -o shmWriter ../Common/RDBHandler.cc ShmWriter.cpp -I../Common/
+#echo "...done"
+
+#echo "compiling shmWriterExtNewSyncDualIG..."
+#g++ -o shmWriterExtNewSyncDualIG -I../Common ../Common/RDBHandler.cc ShmWriterExtNewSyncDualIG.cpp
+#echo "...done"
+
