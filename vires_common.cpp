@@ -16,7 +16,7 @@
 namespace Framework {
     void ViresInterface::handleMessage( RDB_MSG_t* msg )
     {
-        bool csv = false;
+        bool csv = true;
         bool csvHeader = false;
         bool details = false;
         static uint32_t prevFrame=65535;
@@ -233,7 +233,7 @@ namespace Framework {
         static unsigned int  sBytesInBuffer = 0;
         static size_t        sBufferSize    = sizeof( RDB_MSG_HDR_t );
         static unsigned char *spData        = ( unsigned char* ) calloc( 1, sBufferSize );
-        static int           sVerbose       = 0;
+        static bool           sVerbose       = false;
 
         if ( !szBuffer )
             szBuffer = new char[DEFAULT_BUFFER];  // allocate on heap
@@ -286,7 +286,7 @@ namespace Framework {
 
                                 // print the message
                                 if ( sVerbose )
-                                    Framework::RDBHandler::printMessage( ( RDB_MSG_t* ) spData, true );
+                                    Framework::RDBHandler::printMessage( ( RDB_MSG_t* ) spData, false);
 
                                 // now parse the message
                                 parseRDBMessage( ( RDB_MSG_t* ) spData );
@@ -634,8 +634,6 @@ namespace Framework {
         trigger->frameNo = simFrame;
         trigger->deltaT  = deltaTime;
         trigger->features = 0x1 | ( requestImage ? 0x2 : 0x0 );
-
-        fprintf( stderr, "sendRDBTrigger: sending trigger, deltaT = %.4lf, requestImage = %s\n", trigger->deltaT, requestImage ? "true" : "false" );
 
         int retVal = send( mClient, ( const char* ) ( myHandler.getMsg() ), myHandler.getMsgTotalSize(), 0 );
 
