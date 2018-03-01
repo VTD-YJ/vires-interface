@@ -695,6 +695,40 @@ namespace Framework {
         memcpy(image_data_, reinterpret_cast<char*>(image) + sizeof(RDB_IMAGE_t), image_info_.imgSize);
     }
 
+    void ViresInterface::sendOwnObjectState( RDB_OBJECT_STATE_t sOwnObjectState, int & sendSocket, const double & simTime, const unsigned int & simFrame )
+    {
+        Framework::RDBHandler myHandler;
+
+        // start a new message
+        myHandler.initMsg();
+
+        // begin with an SOF identifier
+        myHandler.addPackage( simTime, simFrame, RDB_PKG_ID_START_OF_FRAME );
+
+        // add extended package for the object state
+        RDB_OBJECT_STATE_t *objState = ( RDB_OBJECT_STATE_t* ) myHandler.addPackage( simTime, simFrame, RDB_PKG_ID_OBJECT_STATE, 1, true );
+
+        if ( !objState )
+        {
+            fprintf( stderr, "sendOwnObjectState: could not create object state\n" );
+            return;
+        }
+
+        // copy contents of internally held object state to output structure
+        memcpy( objState, &sOwnObjectState, sizeof( RDB_OBJECT_STATE_t ) );
+
+        fprintf( stderr, "sendOwnObjectState: sending pos x/y/z = %.3lf/%.3lf/%.3lf,\n", objState->base.pos.x, objState->base.pos.y, objState->base.pos.z );
+
+        // terminate with an EOF identifier
+        myHandler.addPackage( simTime, simFrame, RDB_PKG_ID_END_OF_FRAME );
+
+        int retVal = send( sendSocket, ( const char* ) ( myHandler.getMsg() ), myHandler.getMsgTotalSize(), 0 );
+
+        if ( !retVal )
+            fprintf( stderr, "sendOwnObjectState: could not send object state\n" );
+    }
+
+
 }
 
 
