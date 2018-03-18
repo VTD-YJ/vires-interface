@@ -14,6 +14,9 @@
 #define DEFAULT_BUFFER      204800
 
 #define DEFAULT_RX_PORT     48185   /* for image port it should be 48192 */
+
+#define DEFAULT_RX_PORT_PERFECT     48186   /* for image port it should be 48192 */
+
 #define DEFAULT_TX_PORT     48191
 
 namespace Framework {
