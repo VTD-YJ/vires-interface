@@ -15,7 +15,6 @@
 #include <zconf.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <Common/viRDBIcd.h>
 #include "Utils.h"
 
 namespace Framework {
