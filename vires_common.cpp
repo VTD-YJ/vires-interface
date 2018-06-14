@@ -254,22 +254,20 @@ namespace Framework {
 * open the shared memory segment
 */
 
-
-    void ViresInterface::openShm(unsigned int shmKey)
+    void* ViresInterface::openShm(unsigned int shmKey)
     {
-        // do not open twice!
-        if ( mShmPtr )
-            return;
 
         int shmid = 0;
+        void *mShmPtr;
+        size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
 
         if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
-            return;
+            return NULL;
 
         if ( ( mShmPtr = (char *)shmat( shmid, (char *)0, 0 ) ) == (char *) -1 )
         {
             perror("openShm: shmat()");
-            mShmPtr = 0;
+            mShmPtr = NULL;
         }
 
         if ( mShmPtr )
@@ -282,15 +280,21 @@ namespace Framework {
                 mShmTotalSize = sInfo.shm_segsz;
         }
 
+        return mShmPtr;
+
     }
 
-    int ViresInterface::checkShm()
+    int ViresInterface::checkShm(const void *mShmPtr)
     {
         if ( !mShmPtr )
             return 0;
 
+        const unsigned int mCheckMask    = RDB_SHM_BUFFER_FLAG_TC;
+        const int          mForceBuffer  = -1;                                // force reading one of the SHM buffers (0=A, 1=B)
+
+
         // get a pointer to the shm info block
-        RDB_SHM_HDR_t* shmHdr = ( RDB_SHM_HDR_t* ) ( mShmPtr );
+        const RDB_SHM_HDR_t* shmHdr = ( RDB_SHM_HDR_t* ) ( mShmPtr );
 
         if ( !shmHdr )
             return 0;
@@ -305,7 +309,7 @@ namespace Framework {
         RDB_SHM_BUFFER_INFO_t** pBufferInfo = ( RDB_SHM_BUFFER_INFO_t** ) ( new char [ shmHdr->noBuffers * sizeof( RDB_SHM_BUFFER_INFO_t* ) ] );
         RDB_SHM_BUFFER_INFO_t*  pCurrentBufferInfo = 0;
 
-        char* dataPtr = ( char* ) shmHdr;
+        const char* dataPtr = ( char* ) shmHdr;
         dataPtr += shmHdr->headerSize;
 
         for ( int i = 0; i < shmHdr->noBuffers; i++ )
@@ -315,19 +319,19 @@ namespace Framework {
         }
 
         // get the pointers to message section in each buffer
-        RDB_MSG_t* pRdbMsgA = ( RDB_MSG_t* ) ( ( ( char* ) mShmPtr ) + pBufferInfo[0]->offset );
-        RDB_MSG_t* pRdbMsgB = ( RDB_MSG_t* ) ( ( ( char* ) mShmPtr ) + pBufferInfo[1]->offset );
+        const RDB_MSG_t* pRdbMsgA = ( RDB_MSG_t* ) ( ( ( char* ) mShmPtr ) + pBufferInfo[0]->offset );
+        const RDB_MSG_t* pRdbMsgB = ( RDB_MSG_t* ) ( ( ( char* ) mShmPtr ) + pBufferInfo[1]->offset );
 
         // pointer to the message that will actually be read
         RDB_MSG_t* pRdbMsg  = 0;
 
         // remember the flags that are set for each buffer
-        unsigned int flagsA = pBufferInfo[ 0 ]->flags;
-        unsigned int flagsB = pBufferInfo[ 1 ]->flags;
+        const unsigned int flagsA = pBufferInfo[ 0 ]->flags;
+        const unsigned int flagsB = pBufferInfo[ 1 ]->flags;
 
         // check whether any buffer is ready for reading (checkMask is set (or 0) and buffer is NOT locked)
-        bool readyForReadA = ( ( flagsA & mCheckMask ) || !mCheckMask ) && !( flagsA & RDB_SHM_BUFFER_FLAG_LOCK );
-        bool readyForReadB = ( ( flagsB & mCheckMask ) || !mCheckMask ) && !( flagsB & RDB_SHM_BUFFER_FLAG_LOCK );
+        const bool readyForReadA = ( ( flagsA & mCheckMask ) || !mCheckMask ) && !( flagsA & RDB_SHM_BUFFER_FLAG_LOCK );
+        const bool readyForReadB = ( ( flagsB & mCheckMask ) || !mCheckMask ) && !( flagsB & RDB_SHM_BUFFER_FLAG_LOCK );
 
         if ( mVerbose )
         {
@@ -354,34 +358,34 @@ namespace Framework {
             {
                 if ( pRdbMsgA->hdr.frameNo > pRdbMsgB->hdr.frameNo )        // force using the latest image!!
                 {
-                    pRdbMsg            = pRdbMsgA;
+                    pRdbMsg            = (RDB_MSG_t *)pRdbMsgA;
                     pCurrentBufferInfo = pBufferInfo[ 0 ];
                 }
                 else
                 {
-                    pRdbMsg            = pRdbMsgB;
+                    pRdbMsg            = (RDB_MSG_t *)pRdbMsgB;
                     pCurrentBufferInfo = pBufferInfo[ 1 ];
                 }
             }
             else if ( readyForReadA )
             {
-                pRdbMsg            = pRdbMsgA;
+                pRdbMsg            = (RDB_MSG_t *)pRdbMsgA;
                 pCurrentBufferInfo = pBufferInfo[ 0 ];
             }
             else if ( readyForReadB )
             {
-                pRdbMsg            = pRdbMsgB;
+                pRdbMsg            = (RDB_MSG_t *)pRdbMsgB;
                 pCurrentBufferInfo = pBufferInfo[ 1 ];
             }
         }
         else if ( ( mForceBuffer == 0 ) && readyForReadA )   // force reading buffer A
         {
-            pRdbMsg            = pRdbMsgA;
+            pRdbMsg            = (RDB_MSG_t *)pRdbMsgA;
             pCurrentBufferInfo = pBufferInfo[ 0 ];
         }
         else if ( ( mForceBuffer == 1 ) && readyForReadB ) // force reading buffer B
         {
-            pRdbMsg            = pRdbMsgB;
+            pRdbMsg            = (RDB_MSG_t *)pRdbMsgB;
             pCurrentBufferInfo = pBufferInfo[ 1 ];
         }
 
@@ -411,16 +415,16 @@ namespace Framework {
         }
 
         // running the same frame again?
-        if ( (( int ) pRdbMsg->hdr.frameNo ) > mLastShmFrame )
+        //if ( (( int ) pRdbMsg->hdr.frameNo ) > mLastShmFrame )
         {
             // remember the last frame that was read
-            mLastShmFrame = pRdbMsg->hdr.frameNo;
+            //mLastShmFrame = pRdbMsg->hdr.frameNo;
 
             while ( 1 )
             {
                 // handle the message that is contained in the buffer; this method should be provided by the user (i.e. YOU!)
-                handleMessage( pRdbMsg );
 
+                handleMessage( pRdbMsg );
                 // go to the next message (if available); there may be more than one message in an SHM buffer!
                 pRdbMsg = ( RDB_MSG_t* ) ( ( ( char* ) pRdbMsg ) + pRdbMsg->hdr.dataSize + pRdbMsg->hdr.headerSize );
 
@@ -458,6 +462,7 @@ namespace Framework {
 
         return 1;
     }
+
 
     /*
     ViresInterface::checkForShmData() {
@@ -621,7 +626,7 @@ namespace Framework {
         if ( !data )
             return;
         fprintf( stderr, "handleRDBitem: image\n" );
-        fprintf( stderr, "    simTime = %.3lf, simFrame = %d, mLastShmFrame = %d\n", simTime, simFrame, mLastShmFrame );
+        //fprintf( stderr, "    simTime = %.3lf, simFrame = %d, mLastShmFrame = %d\n", simTime, simFrame, mLastShmFrame );
         fprintf( stderr, "    width / height = %d / %d\n", data->width, data->height );
         fprintf( stderr, "    dataSize = %d\n", data->imgSize );
 

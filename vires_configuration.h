@@ -13,6 +13,9 @@
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #include <zconf.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <Common/viRDBIcd.h>
 #include "Utils.h"
 
 namespace Framework {
@@ -20,6 +23,8 @@ namespace Framework {
 
     private:
         char         szServer[128];                                     // Server to connect to
+        bool         mVerbose      = false;                             // run in verbose mode?
+
 
     public:
 
@@ -30,6 +35,7 @@ namespace Framework {
         int openNetwork(int iPort) {
             Utils::openNetwork(iPort, szServer);
         }
+
 
 
     };

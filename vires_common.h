@@ -35,15 +35,8 @@ namespace Framework {
         size_t       mIgOutShmTotalSize = 0;                                          // remember the total size of the SHM segment
         // the memory and message management
 
-        unsigned int mCheckMask    = RDB_SHM_BUFFER_FLAG_TC;
-        void*        mShmPtr       = 0;                                 // pointer to the SHM segment
-        size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
         bool         mVerbose      = false;                             // run in verbose mode?
-        int          mForceBuffer  = -1;                                // force reading one of the SHM buffers (0=A, 1=B)
         char         szServer[128];                                     // Server to connect to
-        int          iPort_Trigger         = DEFAULT_PORT;                      // Port on server to connect to
-        int          iPort_MM         = DEFAULT_RX_PORT;                      // Port on server to connect to
-        int          mLastShmFrame = -1;
 
 /**
 * some global variables, considered "members" of this example
@@ -53,6 +46,8 @@ namespace Framework {
         double       mFrameTime    = 0.030;                             // frame time is 30ms
         void*        mShmPtr_writer       = 0;                                 // pointer to the SHM segment
         size_t       mShmTotalSize_writer = 64 * 1024;                         // 64kB total size of SHM segment
+        int          mLastShmFrame = -1;
+
 // the memory and message management
 
 
@@ -76,11 +71,6 @@ namespace Framework {
         int openNetwork(int iPort);
 
 /**
-* open the network interface for receiving ground truth data
-*/
-        int openNetwork_GT(int iPort);
-
-/**
 * make sure network data is being read
 */
         void readNetwork(int mClient);
@@ -89,12 +79,12 @@ namespace Framework {
 * open the shared memory segment for reading image data
 */
         void* openIgOutShm( int key, size_t *size );
-        void openShm(unsigned int shmKey);
+        void* openShm(unsigned int shmKey);
 
 /**
 * check and parse the contents of the shared memory
 */
-        int checkShm();
+        int checkShm(const void *mShmPtr);
 
 /**
 * check for data that has to be read (otherwise socket will be clogged)
@@ -142,47 +132,39 @@ namespace Framework {
 
         void checkForShmData();
 
+        void* getShmPtr() {
+            //return mShmPtr;
+        }
+
         void sendRDBTrigger( int & sendSocket, const double & simTime, const unsigned int & simFrame, bool
         requestImage, double deltaTime   );
 
-        void *getShmPtr() {
-            return mShmPtr;
-        }
-
         void setVerbose(bool val) {
             mVerbose = val;
-        }
-
-        unsigned int getCheckMask() {
-            return mCheckMask;
-        }
-
-        int getForceBuffer() {
-            return mForceBuffer;
-        }
-
-        void setForceBuffer(int val) {
-            mForceBuffer = val;
-        }
-
-        void setCheckMask(int val) {
-            mCheckMask = val;
-        }
-
-        void setServer(const char *val) {
-            strcpy(szServer, val );
         }
 
         int getLastShmFrame(void) {
             return mLastShmFrame;
         }
 
-        void setTriggerPort(int val) {
-            iPort_Trigger = val;
+        unsigned int getCheckMask() {
+            //return mCheckMask;
         }
 
-        void setMMPort(int val) {
-            iPort_MM = val;
+        int getForceBuffer() {
+            //return mForceBuffer;
+        }
+
+        void setForceBuffer(int val) {
+            //mForceBuffer = val;
+        }
+
+        void setCheckMask(int val) {
+            //mCheckMask = val;
+        }
+
+        void setServer(const char *val) {
+            strcpy(szServer, val );
         }
 
         void readScpNetwork ( int sClient );
