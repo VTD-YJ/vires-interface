@@ -16,7 +16,7 @@ message("Qt5 ${Qt5_FOUND} ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Co
 set(SOURCE_FILES
         # I am using vires RDB implementation
         Communication/Common/RDBHandler.cc
-        vires_common.cpp vires_configuration.h Utils.h)
+        vires_common.cpp vires_configuration.h Utils.h vires_configuration.cpp)
 
 # I am not using bosch rdb implementation because there is no substatial difference between vires and bosch.
 #bosch_adsim/src/rdb_camera_sensor.cpp

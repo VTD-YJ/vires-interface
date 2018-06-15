@@ -2,6 +2,9 @@
 // Created by veikas on 13.06.18.
 //
 
+#ifndef VIRES_INTERFACE_UTILS_H
+#define VIRES_INTERFACE_UTILS_H
+
 #include <netinet/in.h>
 #include <cstdio>
 #include <cerrno>
@@ -76,3 +79,5 @@ namespace Framework {
 
     };
 }
+
+#endif //VIRES_INTERFACE_UTILS_H

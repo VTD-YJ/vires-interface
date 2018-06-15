@@ -15,9 +15,14 @@
 #include <zconf.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <cstdlib>
 #include "Utils.h"
 
+#define DEFAULT_BUFFER      204800
+
+
 namespace Framework {
+
     class ViresConfiguration {
 
     private:
@@ -35,7 +40,9 @@ namespace Framework {
             Utils::openNetwork(iPort, szServer);
         }
 
+        void readScpNetwork ( int sClient );
 
+        void sendSCPMessage( int sClient, const char* text );
 
     };
 }

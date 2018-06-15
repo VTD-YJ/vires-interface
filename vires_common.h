@@ -167,9 +167,6 @@ namespace Framework {
             strcpy(szServer, val );
         }
 
-        void readScpNetwork ( int sClient );
-
-        void sendSCPMessage( int sClient, const char* text );
 
         void sendOwnObjectState( RDB_OBJECT_STATE_t sOwnObjectState, int & sendSocket, const double & simTime, const unsigned int & simFrame );
 
