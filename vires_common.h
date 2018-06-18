@@ -13,10 +13,6 @@
 #define DEFAULT_PORT        48190   /* for image port it should be 48192 */
 #define DEFAULT_BUFFER      204800
 
-#define DEFAULT_RX_PORT     48185   /* for image port it should be 48192 */
-
-#define DEFAULT_RX_PORT_PERFECT     48186   /* for image port it should be 48192 */
-
 #define DEFAULT_TX_PORT     48191
 
 namespace Framework {
@@ -36,7 +32,6 @@ namespace Framework {
         // the memory and message management
 
         bool         mVerbose      = false;                             // run in verbose mode?
-        char         szServer[128];                                     // Server to connect to
 
 /**
 * some global variables, considered "members" of this example
@@ -54,7 +49,6 @@ namespace Framework {
         int          mPortTx    = DEFAULT_TX_PORT;
         int          mSocketTx  = -1;
         unsigned int mAddressTx = INADDR_BROADCAST;
-        int          mPortRx    = DEFAULT_RX_PORT;
         int          mSocketRx  = -1;
         unsigned int mAddressRx = inet_addr( "127.0.0.1" );
 
@@ -65,10 +59,6 @@ namespace Framework {
 */
         int  writeTriggerToShm();
 
-/**
-* open the network interface for sending trigger data
-*/
-        int openNetwork(int iPort);
 
 /**
 * make sure network data is being read
@@ -79,7 +69,6 @@ namespace Framework {
 * open the shared memory segment for reading image data
 */
         void* openIgOutShm( int key, size_t *size );
-        void* openShm(unsigned int shmKey);
 
 /**
 * check and parse the contents of the shared memory
@@ -162,11 +151,6 @@ namespace Framework {
         void setCheckMask(int val) {
             //mCheckMask = val;
         }
-
-        void setServer(const char *val) {
-            strcpy(szServer, val );
-        }
-
 
         void sendOwnObjectState( RDB_OBJECT_STATE_t sOwnObjectState, int & sendSocket, const double & simTime, const unsigned int & simFrame );
 

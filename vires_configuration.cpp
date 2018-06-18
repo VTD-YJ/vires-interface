@@ -14,7 +14,6 @@
 #include <sys/shm.h>
 #include <Common/scpIcd.h>
 #include <cstdlib>
-#include "Utils.h"
 #include "vires_configuration.h"
 
 namespace Framework {
@@ -141,5 +140,40 @@ namespace Framework {
         // free allocated buffer space
         delete msg;
     }
+
+    /**
+    * open the shared memory segment
+    */
+
+    void* ViresConfiguration::openShm(unsigned int shmKey)
+    {
+
+        int shmid = 0;
+        void *mShmPtr;
+        size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
+
+        if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
+            return NULL;
+
+        if ( ( mShmPtr = (char *)shmat( shmid, (char *)0, 0 ) ) == (char *) -1 )
+        {
+            perror("openShm: shmat()");
+            mShmPtr = NULL;
+        }
+
+        if ( mShmPtr )
+        {
+            struct shmid_ds sInfo;
+
+            if ( ( shmid = shmctl( shmid, IPC_STAT, &sInfo ) ) < 0 )
+                perror( "openShm: shmctl()" );
+            else
+                mShmTotalSize = sInfo.shm_segsz;
+        }
+
+        return mShmPtr;
+
+    }
+
 
 }

@@ -6,7 +6,6 @@
 #include <netdb.h>
 #include <string.h>
 #include "vires_common.h"
-#include "Utils.h"
 
 
 /*
@@ -39,11 +38,6 @@ namespace Framework {
         }
         prevFrame = msg->hdr.frameNo;
         parseRDBMessage( msg );
-    }
-
-
-    int ViresInterface::openNetwork(int iPort) {
-        Utils::openNetwork(iPort, szServer);
     }
 
 
@@ -124,40 +118,6 @@ namespace Framework {
         while ( ret > 0 );
     }
 
-
-/**
-* open the shared memory segment
-*/
-
-    void* ViresInterface::openShm(unsigned int shmKey)
-    {
-
-        int shmid = 0;
-        void *mShmPtr;
-        size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
-
-        if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
-            return NULL;
-
-        if ( ( mShmPtr = (char *)shmat( shmid, (char *)0, 0 ) ) == (char *) -1 )
-        {
-            perror("openShm: shmat()");
-            mShmPtr = NULL;
-        }
-
-        if ( mShmPtr )
-        {
-            struct shmid_ds sInfo;
-
-            if ( ( shmid = shmctl( shmid, IPC_STAT, &sInfo ) ) < 0 )
-                perror( "openShm: shmctl()" );
-            else
-                mShmTotalSize = sInfo.shm_segsz;
-        }
-
-        return mShmPtr;
-
-    }
 
     int ViresInterface::checkShm(const void *mShmPtr)
     {
