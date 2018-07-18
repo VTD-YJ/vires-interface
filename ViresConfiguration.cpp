@@ -14,7 +14,7 @@
 #include <sys/shm.h>
 #include <Common/scpIcd.h>
 #include <cstdlib>
-#include "vires_configuration.h"
+#include "ViresConfiguration.h"
 
 namespace Framework {
 
@@ -148,28 +148,46 @@ namespace Framework {
     void* ViresConfiguration::openShm(unsigned int shmKey)
     {
 
-        int shmid = 0;
+        // do not open twice!
+        //if ( mShmPtr )
+        //    return;
+
         void *mShmPtr;
         size_t       mShmTotalSize = 0;                                 // remember the total size of the SHM segment
 
-        if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
-            return NULL;
+        int shmid = 0;
+        int flag  = IPC_CREAT | 0777;
 
+        // does the memory already exist?
+        if ( ( shmid = shmget( shmKey, 0, 0 ) ) < 0 )
+        {
+            // not yet there, so let's create the segment
+            if ( ( shmid = shmget( shmKey, mShmTotalSize, flag ) ) < 0 )
+            {
+                perror("openShm: shmget()");
+                mShmPtr = NULL;
+                return mShmPtr;
+            }
+        }
+
+        // now attach to the segment
         if ( ( mShmPtr = (char *)shmat( shmid, (char *)0, 0 ) ) == (char *) -1 )
         {
             perror("openShm: shmat()");
             mShmPtr = NULL;
         }
 
-        if ( mShmPtr )
-        {
-            struct shmid_ds sInfo;
-
-            if ( ( shmid = shmctl( shmid, IPC_STAT, &sInfo ) ) < 0 )
-                perror( "openShm: shmctl()" );
-            else
-                mShmTotalSize = sInfo.shm_segsz;
+        if ( !mShmPtr ){
+            mShmPtr = NULL;
+            return mShmPtr;
         }
+
+        struct shmid_ds sInfo;
+
+        if ( ( shmid = shmctl( shmid, IPC_STAT, &sInfo ) ) < 0 )
+            perror( "openShm: shmctl()" );
+        else
+            mShmTotalSize = sInfo.shm_segsz;
 
         return mShmPtr;
 

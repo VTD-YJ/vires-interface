@@ -5,7 +5,7 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <string.h>
-#include "vires_common.h"
+#include "ViresInterface.h"
 
 
 /*

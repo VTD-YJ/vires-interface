@@ -16,7 +16,7 @@ message("Qt5 ${Qt5_FOUND} ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Co
 set(SOURCE_FILES
         # I am using vires RDB implementation
         Communication/Common/RDBHandler.cc
-        vires_common.cpp vires_configuration.h vires_configuration.cpp)
+        ViresInterface.cpp ViresConfiguration.h ViresConfiguration.cpp)
 
 # I am not using bosch rdb implementation because there is no substatial difference between vires and bosch.
 #bosch_adsim/src/rdb_camera_sensor.cpp
@@ -33,8 +33,8 @@ add_library(viresrdb SHARED ${SOURCE_FILES})
 #install(TARGETS viresrdb DESTINATION "lib")
 
 #install(FILES "vires/RDBHandler.hh" DESTINATION "include/vires/vires")
-install(FILES "vires_common.h" DESTINATION "include/vires-interface")
-install(FILES "vires_configuration.h" DESTINATION "include/vires-interface")
+install(FILES "ViresInterface.h" DESTINATION "include/vires-interface")
+install(FILES "ViresConfiguration.h" DESTINATION "include/vires-interface")
 
 set_target_properties(viresrdb PROPERTIES PUBLIC_HEADER "Communication/Common/scpIcd.h;Communication/Common/viRDBIcd.h;Communication/Common/RDBHandler.hh")
 

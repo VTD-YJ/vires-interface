@@ -16,7 +16,7 @@
 #define DEFAULT_TX_PORT     48191
 
 namespace Framework {
-    class ViresInterface : Framework::RDBHandler {
+    class ViresInterface : public Framework::RDBHandler {
 
 /**
 * some global variables, considered "members" of this example
